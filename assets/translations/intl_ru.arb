@@ -1,0 +1,12 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Точка Роста",
+  "onboardingTitle": "Добро пожаловать",
+  "authTitle": "Авторизация",
+  "homeTitle": "Главная",
+  "surveyTitle": "Опрос",
+  "resultsTitle": "Результаты",
+  "chatTitle": "Чат",
+  "profileTitle": "Профиль",
+  "settingsTitle": "Настройки"
+}
