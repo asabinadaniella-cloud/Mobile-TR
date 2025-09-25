@@ -2,15 +2,17 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/app_providers.dart';
+import '../../../features/auth/application/auth_providers.dart';
 
 class JwtInterceptor extends Interceptor {
   JwtInterceptor(this.ref);
 
   final Ref ref;
+  Future<void>? _refreshFuture;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    final token = ref.read(authTokenProvider);
+    final token = ref.read(authTokensProvider).accessToken;
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }
@@ -20,23 +22,34 @@ class JwtInterceptor extends Interceptor {
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
-      final refreshed = await _refreshToken();
-      if (refreshed) {
+      try {
+        await (_refreshFuture ??= _refreshToken());
+        _refreshFuture = null;
         final requestOptions = err.requestOptions;
         final dio = ref.read(dioProvider);
+        final token = ref.read(authTokensProvider).accessToken;
+        if (token != null) {
+          requestOptions.headers['Authorization'] = 'Bearer $token';
+        }
         final response = await dio.fetch(requestOptions);
         return handler.resolve(response);
+      } catch (_) {
+        _refreshFuture = null;
       }
     }
     super.onError(err, handler);
   }
 
-  Future<bool> _refreshToken() async {
-    final refreshToken = ref.read(refreshTokenProvider);
+  Future<void> _refreshToken() async {
+    final refreshToken = ref.read(authTokensProvider).refreshToken;
     if (refreshToken == null) {
-      return false;
+      throw DioException(requestOptions: RequestOptions(path: ''), error: 'Refresh token missing');
     }
-    // TODO: Implement refresh flow using Dio once backend is available.
-    return false;
+    final repository = ref.read(authRepositoryProvider);
+    final tokens = await repository.refreshTokens(refreshToken);
+    await ref.read(authTokensProvider.notifier).setTokens(
+          accessToken: tokens.accessToken!,
+          refreshToken: tokens.refreshToken!,
+        );
   }
 }
