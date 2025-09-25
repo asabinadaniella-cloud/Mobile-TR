@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,3 +31,7 @@ final dioProvider = Provider<Dio>((ref) {
 
 final authTokenProvider = StateProvider<String?>((ref) => null);
 final refreshTokenProvider = StateProvider<String?>((ref) => null);
+
+final firebaseAnalyticsProvider = Provider<FirebaseAnalytics?>((ref) {
+  return FirebaseAnalytics.instance;
+});
