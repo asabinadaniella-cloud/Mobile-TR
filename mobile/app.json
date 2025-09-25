@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "MobileApp",
+    "slug": "mobile-app",
+    "version": "1.0.0",
+    "scheme": "mobileapp",
+    "orientation": "portrait",
+    "icon": "./assets/icon-placeholder.png",
+    "splash": {
+      "image": "./assets/splash-placeholder.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon-placeholder.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon-placeholder.png"
+    },
+    "plugins": [
+      ["expo-router"],
+      "expo-splash-screen"
+    ]
+  }
+}
