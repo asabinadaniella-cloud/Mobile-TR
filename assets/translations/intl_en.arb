@@ -1,0 +1,12 @@
+{
+  "@@locale": "en",
+  "appTitle": "Tochka Rosta",
+  "onboardingTitle": "Welcome",
+  "authTitle": "Sign In",
+  "homeTitle": "Home",
+  "surveyTitle": "Survey",
+  "resultsTitle": "Results",
+  "chatTitle": "Chat",
+  "profileTitle": "Profile",
+  "settingsTitle": "Settings"
+}
