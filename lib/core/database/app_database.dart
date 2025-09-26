@@ -179,6 +179,7 @@ class Messages extends Table {
   TextColumn get body => text()();
   TextColumn get messageType => text().withDefault(const Constant('text'))();
   BoolColumn get isRead => boolean().withDefault(const Constant(false))();
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
   DateTimeColumn get sentAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().nullable()();
 
@@ -484,6 +485,20 @@ class ChatsDao extends DatabaseAccessor<AppDatabase> with _$ChatsDaoMixin {
 
   Future<List<Chat>> chatsForUser(String userId) =>
       (select(chats)..where((tbl) => tbl.userId.equals(userId))).get();
+
+  Future<Chat?> findById(String chatId) =>
+      (select(chats)..where((tbl) => tbl.id.equals(chatId))).getSingleOrNull();
+
+  Stream<List<Chat>> watchChatsForModerator() {
+    return (select(chats)
+          ..orderBy(
+            [
+              (tbl) => OrderingTerm(expression: tbl.updatedAt, mode: OrderingMode.desc),
+              (tbl) => OrderingTerm(expression: tbl.createdAt, mode: OrderingMode.desc),
+            ],
+          ))
+        .watch();
+  }
 }
 
 @DriftAccessor(tables: [Messages])
@@ -519,6 +534,34 @@ class MessagesDao extends DatabaseAccessor<AppDatabase> with _$MessagesDaoMixin 
 
   Future<List<Message>> messagesForChat(String chatId) =>
       (select(messages)..where((tbl) => tbl.chatId.equals(chatId))).get();
+
+  Stream<List<Message>> watchMessagesOrdered(String chatId) {
+    final query = select(messages)
+      ..where((tbl) => tbl.chatId.equals(chatId))
+      ..orderBy([
+        (tbl) => OrderingTerm(expression: tbl.sentAt, mode: OrderingMode.asc),
+        (tbl) => OrderingTerm(expression: tbl.id, mode: OrderingMode.asc),
+      ]);
+    return query.watch();
+  }
+
+  Future<List<Message>> fetchUnsyncedMessages(String chatId) {
+    return (select(messages)
+          ..where(
+            (tbl) => tbl.chatId.equals(chatId) & tbl.isSynced.equals(false),
+          ))
+        .get();
+  }
+
+  Future<void> markMessageSynced(String id) async {
+    await (update(messages)..where((tbl) => tbl.id.equals(id))).write(
+      const MessagesCompanion(isSynced: Value(true)),
+    );
+  }
+
+  Future<void> deleteMessage(String id) async {
+    await (delete(messages)..where((tbl) => tbl.id.equals(id))).go();
+  }
 }
 
 @DriftAccessor(tables: [Files])
@@ -530,6 +573,25 @@ class FilesDao extends DatabaseAccessor<AppDatabase> with _$FilesDaoMixin {
 
   Future<List<FileEntity>> filesForMessage(String messageId) =>
       (select(files)..where((tbl) => tbl.messageId.equals(messageId))).get();
+
+  Future<void> replaceFilesForMessage(
+    String messageId,
+    List<Insertable<FileEntity>> entries,
+  ) async {
+    await transaction(() async {
+      await (delete(files)..where((tbl) => tbl.messageId.equals(messageId))).go();
+      if (entries.isEmpty) {
+        return;
+      }
+      await batch((batch) {
+        batch.insertAllOnConflictUpdate(files, entries);
+      });
+    });
+  }
+
+  Future<void> deleteFilesForMessage(String messageId) async {
+    await (delete(files)..where((tbl) => tbl.messageId.equals(messageId))).go();
+  }
 }
 
 @DriftAccessor(tables: [PushTokens])

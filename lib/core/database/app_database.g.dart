@@ -2668,9 +2668,10 @@ class Message extends DataClass implements Insertable<Message> {
   final String body;
   final String messageType;
   final bool isRead;
+  final bool isSynced;
   final DateTime sentAt;
   final DateTime? updatedAt;
-  const Message({required this.id, required this.chatId, required this.senderId, required this.body, required this.messageType, required this.isRead, required this.sentAt, this.updatedAt});
+  const Message({required this.id, required this.chatId, required this.senderId, required this.body, required this.messageType, required this.isRead, required this.isSynced, required this.sentAt, this.updatedAt});
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2681,6 +2682,7 @@ class Message extends DataClass implements Insertable<Message> {
     map['body'] = Variable<String>(body);
     map['message_type'] = Variable<String>(messageType);
     map['is_read'] = Variable<bool>(isRead);
+    map['is_synced'] = Variable<bool>(isSynced);
     map['sent_at'] = Variable<DateTime>(sentAt);
     if (!nullToAbsent || updatedAt != null) {
       map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -2696,6 +2698,7 @@ class Message extends DataClass implements Insertable<Message> {
       body: Value(body),
       messageType: Value(messageType),
       isRead: Value(isRead),
+      isSynced: Value(isSynced),
       sentAt: Value(sentAt),
       updatedAt: updatedAt == null && nullToAbsent ? const Value.absent() : Value(updatedAt),
     );
@@ -2710,6 +2713,7 @@ class Message extends DataClass implements Insertable<Message> {
       body: serializer.fromJson<String>(json['body']),
       messageType: serializer.fromJson<String>(json['messageType']),
       isRead: serializer.fromJson<bool>(json['isRead']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
       sentAt: serializer.fromJson<DateTime>(json['sentAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -2724,6 +2728,7 @@ class Message extends DataClass implements Insertable<Message> {
       'body': serializer.toJson<String>(body),
       'messageType': serializer.toJson<String>(messageType),
       'isRead': serializer.toJson<bool>(isRead),
+      'isSynced': serializer.toJson<bool>(isSynced),
       'sentAt': serializer.toJson<DateTime>(sentAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -2736,6 +2741,7 @@ class Message extends DataClass implements Insertable<Message> {
     String? body,
     String? messageType,
     bool? isRead,
+    bool? isSynced,
     DateTime? sentAt,
     Value<DateTime?>? updatedAt = const Value.absent(),
   }) {
@@ -2746,17 +2752,18 @@ class Message extends DataClass implements Insertable<Message> {
       body: body ?? this.body,
       messageType: messageType ?? this.messageType,
       isRead: isRead ?? this.isRead,
+      isSynced: isSynced ?? this.isSynced,
       sentAt: sentAt ?? this.sentAt,
       updatedAt: updatedAt != null && updatedAt!.present ? updatedAt!.value : this.updatedAt,
     );
   }
 
   @override
-  int get hashCode => Object.hashAll([id, chatId, senderId, body, messageType, isRead, sentAt, updatedAt]);
+  int get hashCode => Object.hashAll([id, chatId, senderId, body, messageType, isRead, isSynced, sentAt, updatedAt]);
   @override
-  bool operator ==(Object other) => identical(this, other) || (other is Message && other.id == id && other.chatId == chatId && other.senderId == senderId && other.body == body && other.messageType == messageType && other.isRead == isRead && other.sentAt == sentAt && other.updatedAt == updatedAt);
+  bool operator ==(Object other) => identical(this, other) || (other is Message && other.id == id && other.chatId == chatId && other.senderId == senderId && other.body == body && other.messageType == messageType && other.isRead == isRead && other.isSynced == isSynced && other.sentAt == sentAt && other.updatedAt == updatedAt);
   @override
-  String toString() => 'Message(id: ${id}, chatId: ${chatId}, senderId: ${senderId}, body: ${body}, messageType: ${messageType}, isRead: ${isRead}, sentAt: ${sentAt}, updatedAt: ${updatedAt})';
+  String toString() => 'Message(id: ${id}, chatId: ${chatId}, senderId: ${senderId}, body: ${body}, messageType: ${messageType}, isRead: ${isRead}, isSynced: ${isSynced}, sentAt: ${sentAt}, updatedAt: ${updatedAt})';
 }
 
 class MessagesCompanion extends UpdateCompanion<Message> {
@@ -2766,9 +2773,10 @@ class MessagesCompanion extends UpdateCompanion<Message> {
   final Value<String> body;
   final Value<String> messageType;
   final Value<bool> isRead;
+  final Value<bool> isSynced;
   final Value<DateTime> sentAt;
   final Value<DateTime?> updatedAt;
-  const MessagesCompanion({this.id = const Value.absent(), this.chatId = const Value.absent(), this.senderId = const Value.absent(), this.body = const Value.absent(), this.messageType = const Value.absent(), this.isRead = const Value.absent(), this.sentAt = const Value.absent(), this.updatedAt = const Value.absent()});
+  const MessagesCompanion({this.id = const Value.absent(), this.chatId = const Value.absent(), this.senderId = const Value.absent(), this.body = const Value.absent(), this.messageType = const Value.absent(), this.isRead = const Value.absent(), this.isSynced = const Value.absent(), this.sentAt = const Value.absent(), this.updatedAt = const Value.absent()});
 
   MessagesCompanion.insert({
     required String id,
@@ -2777,6 +2785,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
     required String body,
     this.messageType = const Value.absent(),
     this.isRead = const Value.absent(),
+    this.isSynced = const Value.absent(),
     this.sentAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   }) :
@@ -2786,6 +2795,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
         body = Value(body),
         messageType = this.messageType,
         isRead = this.isRead,
+        isSynced = this.isSynced,
         sentAt = this.sentAt,
         updatedAt = this.updatedAt,
         ;
@@ -2797,6 +2807,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
     Expression<String>? body,
     Expression<String>? messageType,
     Expression<bool>? isRead,
+    Expression<bool>? isSynced,
     Expression<DateTime>? sentAt,
     Expression<DateTime?>? updatedAt,
   }) {
@@ -2807,6 +2818,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
       if (body != null) 'body': body,
       if (messageType != null) 'message_type': messageType,
       if (isRead != null) 'is_read': isRead,
+      if (isSynced != null) 'is_synced': isSynced,
       if (sentAt != null) 'sent_at': sentAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -2819,6 +2831,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
     Value<String>? body,
     Value<String>? messageType,
     Value<bool>? isRead,
+    Value<bool>? isSynced,
     Value<DateTime>? sentAt,
     Value<DateTime?>? updatedAt,
   }) {
@@ -2829,6 +2842,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
       body: body ?? this.body,
       messageType: messageType ?? this.messageType,
       isRead: isRead ?? this.isRead,
+      isSynced: isSynced ?? this.isSynced,
       sentAt: sentAt ?? this.sentAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -2855,6 +2869,9 @@ class MessagesCompanion extends UpdateCompanion<Message> {
     if (isRead.present) {
       map['is_read'] = Variable<bool>(isRead.value);
     }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
     if (sentAt.present) {
       map['sent_at'] = Variable<DateTime>(sentAt.value);
     }
@@ -2878,6 +2895,7 @@ class MessagesTable extends Messages with TableInfo<MessagesTable, Message> {
   late final GeneratedColumn<String> body = GeneratedColumn<String>('body', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
   late final GeneratedColumn<String> messageType = GeneratedColumn<String>('message_type', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: false, defaultValue: const Constant('text'));
   late final GeneratedColumn<bool> isRead = GeneratedColumn<bool>('is_read', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>('is_synced', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: const Constant(false));
   late final GeneratedColumn<DateTime> sentAt = GeneratedColumn<DateTime>('sent_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>('updated_at', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
   @override
@@ -2888,6 +2906,7 @@ class MessagesTable extends Messages with TableInfo<MessagesTable, Message> {
         body,
         messageType,
         isRead,
+        isSynced,
         sentAt,
         updatedAt
       ];
@@ -2930,6 +2949,9 @@ class MessagesTable extends Messages with TableInfo<MessagesTable, Message> {
     if (data.containsKey('is_read')) {
       context.handle(const VerificationMeta('isRead'), isRead.isAcceptableOrUnknown(data['is_read']!, const VerificationMeta('isRead')));
     }
+    if (data.containsKey('is_synced')) {
+      context.handle(const VerificationMeta('isSynced'), isSynced.isAcceptableOrUnknown(data['is_synced']!, const VerificationMeta('isSynced')));
+    }
     if (data.containsKey('sent_at')) {
       context.handle(const VerificationMeta('sentAt'), sentAt.isAcceptableOrUnknown(data['sent_at']!, const VerificationMeta('sentAt')));
     }
@@ -2949,6 +2971,7 @@ class MessagesTable extends Messages with TableInfo<MessagesTable, Message> {
       body: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}body'])!,
       messageType: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}message_type'])!,
       isRead: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}is_read'])!,
+      isSynced: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}is_synced'])!,
       sentAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}sent_at'])!,
       updatedAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])
     );
