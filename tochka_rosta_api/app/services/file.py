@@ -1,15 +1,17 @@
 from __future__ import annotations
 
 import mimetypes
+from pathlib import Path
 from uuid import uuid4
 
+from botocore.exceptions import BotoCoreError, ClientError
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from ..files.storage.s3 import S3Storage
+from ..models.file import StoredFile
 from ..repositories.file import FileRepository
 from ..schemas.file import FileRead
-from ..models.file import StoredFile
-from ..files.storage.s3 import S3Storage
 
 ALLOWED_CONTENT_TYPES = {
     "application/pdf",
@@ -26,7 +28,7 @@ class FileService:
         self.storage = storage or S3Storage()
 
     async def upload(self, owner_id: int, upload: UploadFile) -> FileRead:
-        filename = upload.filename or "file"
+        filename = Path(upload.filename or "file").name
         contents = await upload.read()
         await upload.close()
 
@@ -35,15 +37,20 @@ class FileService:
             raise ValueError("File is too large")
 
         content_type = upload.content_type
+        if content_type:
+            content_type = content_type.lower()
         if not content_type:
             guessed, _ = mimetypes.guess_type(filename)
-            content_type = guessed or "application/octet-stream"
+            content_type = (guessed or "application/octet-stream").lower()
 
         if content_type not in ALLOWED_CONTENT_TYPES:
             raise ValueError("Unsupported file type")
 
         key = f"{owner_id}/{uuid4().hex}_{filename}"
-        self.storage.upload(contents, key, content_type)
+        try:
+            self.storage.upload(contents, key, content_type)
+        except (BotoCoreError, ClientError) as exc:  # pragma: no cover - defensive
+            raise RuntimeError("Failed to upload file to storage") from exc
 
         stored = StoredFile(
             owner_id=owner_id,
