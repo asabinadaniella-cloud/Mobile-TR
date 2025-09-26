@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -43,18 +44,38 @@ class AppLocalizations {
   late Map<String, String> _localizedStrings;
 
   Future<void> _loadTranslations() async {
-    final fallbacks = <String>{locale.languageCode, 'ru'};
-    for (final code in fallbacks) {
+    final codes = LinkedHashSet<String>()
+      ..add('ru')
+      ..add(locale.languageCode.toLowerCase());
+    final merged = <String, String>{};
+
+    for (final code in codes) {
       try {
         final jsonString = await rootBundle.loadString('assets/translations/intl_${code.toLowerCase()}.arb');
         final Map<String, dynamic> jsonMap = json.decode(jsonString) as Map<String, dynamic>;
-        _localizedStrings = jsonMap.map((key, value) => MapEntry(key, value.toString()));
-        return;
+        jsonMap.forEach((key, value) {
+          if (key.startsWith('@')) {
+            return;
+          }
+          if (value is! String) {
+            return;
+          }
+          if (value.isEmpty) {
+            merged.putIfAbsent(key, () => value);
+            return;
+          }
+          merged[key] = value;
+        });
       } catch (_) {
         continue;
       }
     }
-    _localizedStrings = {'appTitle': defaultTitle};
+
+    if (merged.isEmpty) {
+      merged['appTitle'] = defaultTitle;
+    }
+
+    _localizedStrings = merged;
   }
 
   String _get(String key) {
@@ -101,6 +122,24 @@ class AppLocalizations {
   String get resultsPublishSuccessMessage => _get('resultsPublishSuccessMessage');
   String get resultsExportPreparing => _get('resultsExportPreparing');
   String get resultsNotFoundMessage => _get('resultsNotFoundMessage');
+  String get onboardingDescription => _get('onboardingDescription');
+  String get continueAction => _get('continueAction');
+  String get settingsThemeLabel => _get('settingsThemeLabel');
+  String get settingsThemeSystem => _get('settingsThemeSystem');
+  String get settingsThemeLight => _get('settingsThemeLight');
+  String get settingsThemeDark => _get('settingsThemeDark');
+  String get settingsTextSizeLabel => _get('settingsTextSizeLabel');
+  String get settingsLanguageLabel => _get('settingsLanguageLabel');
+  String get settingsLanguageRu => _get('settingsLanguageRu');
+  String get settingsLanguageEn => _get('settingsLanguageEn');
+  String get surveyValidationRequired => _get('surveyValidationRequired');
+  String get surveyNoQuestionsMessage => _get('surveyNoQuestionsMessage');
+  String get surveyQuestionsLabel => _get('surveyQuestionsLabel');
+  String get surveyContinueLater => _get('surveyContinueLater');
+  String get surveyBackButton => _get('surveyBackButton');
+  String get surveyNextButton => _get('surveyNextButton');
+  String get surveyLoadErrorTitle => _get('surveyLoadErrorTitle');
+  String get surveyRetryButton => _get('surveyRetryButton');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

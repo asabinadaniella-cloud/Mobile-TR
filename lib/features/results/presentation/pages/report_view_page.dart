@@ -247,7 +247,17 @@ class _ReportViewPageState extends ConsumerState<ReportViewPage> {
 
   void _onPublish() {
     final l10n = AppLocalizations.of(context);
+    final analytics = ref.read(firebaseAnalyticsProvider);
     final updatedSummary = _collectUpdatedSummary(widget.report.summary);
+    final hadChanges = _hasChanges;
+    analytics?.logEvent(
+      name: 'report_publish',
+      parameters: {
+        'report_id': widget.report.id,
+        'status': widget.report.status.apiValue,
+        'has_changes': hadChanges ? 1 : 0,
+      },
+    );
     setState(() {
       _currentSummary = updatedSummary;
       _hasChanges = false;

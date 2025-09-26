@@ -93,6 +93,8 @@ class SurveyState {
 }
 
 class SurveyController extends StateNotifier<SurveyState> {
+  static const missingAnswerErrorKey = 'missing_answer';
+
   SurveyController(
     this._repository,
     this._syncService,
@@ -180,7 +182,8 @@ class SurveyController extends StateNotifier<SurveyState> {
   Future<void> saveAnswer(dynamic answer) async {
     final survey = state.survey.valueOrNull;
     final question = state.currentQuestion;
-    if (survey == null || question == null) {
+    final section = state.currentSection;
+    if (survey == null || question == null || section == null) {
       return;
     }
     state = state.copyWith(isSaving: true, clearValidationError: true);
@@ -197,6 +200,15 @@ class SurveyController extends StateNotifier<SurveyState> {
         isSaving: false,
         answers: updatedAnswers,
         clearValidationError: true,
+      );
+      await _analytics?.logEvent(
+        name: 'survey_answer_saved',
+        parameters: {
+          'survey_id': survey.id,
+          'section_id': section.id,
+          'question_id': question.id,
+          'question_type': question.type.name,
+        },
       );
       unawaited(_syncService?.syncPendingResponses(_userId));
     } catch (error) {
@@ -215,8 +227,28 @@ class SurveyController extends StateNotifier<SurveyState> {
     }
 
     if (!triggeredByTimer && !_hasAnswer(question)) {
-      state = state.copyWith(validationError: 'Пожалуйста, ответьте на вопрос.');
+      await _analytics?.logEvent(
+        name: 'survey_validation_error',
+        parameters: {
+          'survey_id': survey.id,
+          'section_id': section.id,
+          'question_id': question.id,
+          'reason': 'missing_answer',
+        },
+      );
+      state = state.copyWith(validationError: missingAnswerErrorKey);
       return;
+    }
+
+    if (triggeredByTimer) {
+      await _analytics?.logEvent(
+        name: 'survey_auto_advance',
+        parameters: {
+          'survey_id': survey.id,
+          'section_id': section.id,
+          'question_id': question.id,
+        },
+      );
     }
 
     final isLastQuestionInSection =
@@ -228,7 +260,12 @@ class SurveyController extends StateNotifier<SurveyState> {
     if (isLastQuestionInSurvey) {
       await _analytics?.logEvent(
         name: 'survey_complete',
-        parameters: {'survey_id': survey.id},
+        parameters: {
+          'survey_id': survey.id,
+          'section_id': section.id,
+          'question_id': question.id,
+          'trigger': triggeredByTimer ? 'timer' : 'user',
+        },
       );
       _timer?.cancel();
       state = state.copyWith(validationError: null);
@@ -241,6 +278,8 @@ class SurveyController extends StateNotifier<SurveyState> {
         parameters: {
           'survey_id': survey.id,
           'section_id': section.id,
+          'question_id': question.id,
+          'trigger': triggeredByTimer ? 'timer' : 'user',
         },
       );
       final nextSectionIndex = state.currentSectionIndex + 1;
@@ -285,6 +324,17 @@ class SurveyController extends StateNotifier<SurveyState> {
   }
 
   Future<void> continueLater() async {
+    final survey = state.survey.valueOrNull;
+    final question = state.currentQuestion;
+    if (survey != null) {
+      await _analytics?.logEvent(
+        name: 'survey_paused',
+        parameters: {
+          'survey_id': survey.id,
+          if (question != null) 'question_id': question.id,
+        },
+      );
+    }
     _timer?.cancel();
     await _syncService?.syncPendingResponses(_userId);
   }

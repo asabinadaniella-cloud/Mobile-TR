@@ -16,44 +16,62 @@ class SettingsPage extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final textScale = ref.watch(textScaleFactorProvider);
     final locale = ref.watch(localeProvider);
+    final analytics = ref.read(firebaseAnalyticsProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          Text('Тема', style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.settingsThemeLabel, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           SegmentedButton<ThemeMode>(
-            segments: const [
-              ButtonSegment(value: ThemeMode.system, label: Text('Система')),
-              ButtonSegment(value: ThemeMode.light, label: Text('Светлая')),
-              ButtonSegment(value: ThemeMode.dark, label: Text('Тёмная')),
+            segments: [
+              ButtonSegment(value: ThemeMode.system, label: Text(l10n.settingsThemeSystem)),
+              ButtonSegment(value: ThemeMode.light, label: Text(l10n.settingsThemeLight)),
+              ButtonSegment(value: ThemeMode.dark, label: Text(l10n.settingsThemeDark)),
             ],
             selected: {themeMode},
-            onSelectionChanged: (value) => ref.read(themeModeProvider.notifier).state = value.first,
+            onSelectionChanged: (value) {
+              final newMode = value.first;
+              ref.read(themeModeProvider.notifier).state = newMode;
+              analytics?.logEvent(
+                name: 'settings_theme_changed',
+                parameters: {'theme_mode': newMode.name},
+              );
+            },
           ),
           const SizedBox(height: 24),
-          Text('Размер текста', style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.settingsTextSizeLabel, style: Theme.of(context).textTheme.titleMedium),
           Slider(
             value: textScale,
             min: 0.8,
             max: 1.4,
             divisions: 6,
             label: textScale.toStringAsFixed(1),
-            onChanged: (value) => ref.read(textScaleFactorProvider.notifier).state = value,
+            onChanged: (value) {
+              ref.read(textScaleFactorProvider.notifier).state = value;
+              analytics?.logEvent(
+                name: 'settings_text_scale_changed',
+                parameters: {'scale': value},
+              );
+            },
           ),
           const SizedBox(height: 24),
-          Text('Язык', style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.settingsLanguageLabel, style: Theme.of(context).textTheme.titleMedium),
           DropdownButton<Locale>(
             value: locale,
-            items: const [
-              DropdownMenuItem(value: Locale('ru'), child: Text('Русский')),
-              DropdownMenuItem(value: Locale('en'), child: Text('English')),
+            items: [
+              DropdownMenuItem(value: const Locale('ru'), child: Text(l10n.settingsLanguageRu)),
+              DropdownMenuItem(value: const Locale('en'), child: Text(l10n.settingsLanguageEn)),
             ],
             onChanged: (value) {
               if (value != null) {
                 ref.read(localeProvider.notifier).state = value;
+                analytics?.logEvent(
+                  name: 'settings_language_changed',
+                  parameters: {'language_code': value.languageCode},
+                );
               }
             },
           ),
