@@ -1,4 +1,4 @@
-name: Flutter Web CI
+name: Build and Deploy Flutter Web
 
 on:
   push:
@@ -7,50 +7,56 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-
+    env:
+      REPO_NAME: ${{ github.event.repository.name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Ensure firebase_messaging is not used
+      - name: Fail if firebase_messaging dependency is present
+        shell: /bin/bash
         run: |
-          for file in pubspec.yaml pubspec.lock; do
-            if [ -f "$file" ] && grep -q "firebase_messaging" "$file"; then
-              echo "firebase_messaging is not supported on Flutter Web. Please remove it from dependencies." >&2
-              exit 1
-            fi
-          done
+          if grep -q "firebase_messaging" pubspec.yaml 2>/dev/null; then
+            echo "::error::firebase_messaging package is not supported on Web."
+            exit 1
+          fi
+          if [ -f pubspec.lock ] && grep -q "firebase_messaging" pubspec.lock; then
+            echo "::error::firebase_messaging package is not supported on Web."
+            exit 1
+          fi
+          echo "firebase_messaging not found."
 
-      - name: Cache Flutter pub packages
-        uses: actions/cache@v3
+      - name: Cache Pub packages
+        uses: actions/cache@v4
         with:
-          path: |
-            ~/.pub-cache
-            .dart_tool
-          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pub-
+          path: ~/.pub-cache
+          key: ${{ runner.os }}-pub-${{ hashFiles('pubspec.yaml') }}
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
 
-      - name: Flutter pub upgrade
+      - name: Upgrade dependencies to latest major versions
         run: flutter pub upgrade --major-versions
 
-      - name: Flutter pub get
+      - name: Get dependencies
         run: flutter pub get
 
+      - name: Enable Flutter web support
+        run: flutter config --enable-web
+
+      - name: Configure web platform files
+        run: flutter create . --platforms web
+
       - name: Build Flutter web app
-        run: flutter build web --release
+        run: flutter build web --release --base-href "/${REPO_NAME}/" --web-renderer html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
           publish_branch: gh-pages
-          publish_dir: build/web
-          force_orphan: true
