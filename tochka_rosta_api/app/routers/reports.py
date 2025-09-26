@@ -1,9 +1,16 @@
 import csv
 from datetime import datetime
-from io import StringIO
+from io import BytesIO, StringIO
 
 from fastapi import APIRouter, Depends, Path
 from fastapi.responses import Response
+
+try:  # pragma: no cover - optional dependency
+    from reportlab.lib.pagesizes import A4  # type: ignore
+    from reportlab.pdfgen import canvas  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover - executed only when optional dependency missing
+    A4 = None
+    canvas = None
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..core.database import get_session
@@ -118,6 +125,69 @@ def _escape_pdf_text(value: str) -> str:
 
 
 def _build_pdf_document(summary: str, answers) -> bytes:
+    if canvas is not None and A4 is not None:
+        return _build_pdf_with_reportlab(summary, answers)
+    return _build_pdf_fallback(summary, answers)
+
+
+def _build_pdf_with_reportlab(summary: str, answers) -> bytes:
+    buffer = BytesIO()
+    pdf = canvas.Canvas(buffer, pagesize=A4)
+    width, height = A4
+    margin = 72
+    y_position = height - margin
+
+    def ensure_space(required_height: int, font_name: str, font_size: int) -> None:
+        nonlocal y_position
+        if y_position - required_height < margin:
+            pdf.showPage()
+            pdf.setFont(font_name, font_size)
+            y_position = height - margin
+
+    pdf.setFont("Helvetica-Bold", 20)
+    pdf.drawString(margin, y_position, "Tochka Rosta")
+    y_position -= 26
+
+    pdf.setFont("Helvetica", 10)
+    pdf.drawString(margin, y_position, datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"))
+    y_position -= 28
+
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(margin, y_position, "Summary")
+    y_position -= 22
+
+    pdf.setFont("Helvetica", 12)
+    for line in _wrap_text(summary, 90):
+        ensure_space(16, "Helvetica", 12)
+        pdf.drawString(margin, y_position, line)
+        y_position -= 16
+
+    y_position -= 14
+    ensure_space(22, "Helvetica-Bold", 14)
+    pdf.setFont("Helvetica-Bold", 14)
+    pdf.drawString(margin, y_position, "Key Answers")
+    y_position -= 22
+
+    pdf.setFont("Helvetica", 12)
+    if not answers:
+        ensure_space(16, "Helvetica", 12)
+        pdf.drawString(margin, y_position, "No answers provided")
+        y_position -= 16
+    else:
+        for answer in answers:
+            text = f"{_format_question(answer)}: {answer.answer}"
+            wrapped_lines = _wrap_text(text, 90)
+            for line in wrapped_lines:
+                ensure_space(16, "Helvetica", 12)
+                pdf.drawString(margin, y_position, line)
+                y_position -= 16
+            y_position -= 8
+
+    pdf.save()
+    return buffer.getvalue()
+
+
+def _build_pdf_fallback(summary: str, answers) -> bytes:
     width, height = 595, 842  # A4 in points
     y_position = height - 72
     content_lines: list[str] = []
