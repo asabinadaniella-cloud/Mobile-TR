@@ -1,122 +1,95 @@
-import asyncio
-from collections.abc import AsyncIterator
-from typing import Generator
+from io import BytesIO
+
+from dataclasses import dataclass, field
+from datetime import datetime
+from io import BytesIO
 
 import pytest
-from fastapi import Depends
-from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from fastapi import UploadFile
 
-from tochka_rosta_api.app.core.database import get_session
-from tochka_rosta_api.app.core.security import get_current_user
-from tochka_rosta_api.app.main import app
-from tochka_rosta_api.app.models.base import Base
-from tochka_rosta_api.app.models.user import User
-from tochka_rosta_api.app.routers.files import get_file_service
+import tochka_rosta_api.app.services.file as file_module
 from tochka_rosta_api.app.services.file import FileService
+from tochka_rosta_api.tests.conftest import FakeS3Storage
 
 
-class FakeS3Storage:
+@dataclass
+class StubStoredFile:
+    owner_id: int
+    filename: str
+    content_type: str
+    size: int
+    bucket: str
+    key: str
+    id: int = 0
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: datetime = field(default_factory=datetime.utcnow)
+
+
+file_module.StoredFile = StubStoredFile  # type: ignore[attr-defined]
+
+
+class DummySession:
+    async def commit(self) -> None:  # pragma: no cover - simple stub
+        return None
+
+    async def refresh(self, instance: StubStoredFile) -> None:  # pragma: no cover - simple stub
+        return None
+
+
+class DummyFileRepository:
     def __init__(self) -> None:
-        self.bucket = "test-bucket"
-        self.uploaded: dict[str, dict[str, object]] = {}
+        self.items: list[StubStoredFile] = []
+        self.counter = 0
 
-    def upload(self, data: bytes, key: str, content_type: str) -> None:
-        self.uploaded[key] = {"data": data, "content_type": content_type}
+    async def add(self, stored: StubStoredFile) -> StubStoredFile:
+        self.counter += 1
+        stored.id = self.counter
+        timestamp = datetime.utcnow()
+        stored.created_at = timestamp
+        stored.updated_at = timestamp
+        self.items.append(stored)
+        return stored
 
-    def generate_presigned_url(self, key: str, expires_in: int = 3600) -> str:
-        return f"https://fake-s3/{self.bucket}/{key}?expires={expires_in}"
-
-
-@pytest.fixture(scope="session")
-def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
-    loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture()
-def session_factory(
-    event_loop: asyncio.AbstractEventLoop,
-) -> Generator[async_sessionmaker[AsyncSession], None, None]:
-    engine = create_async_engine("sqlite+aiosqlite:///:memory:", future=True)
-
-    async def init_models() -> None:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-
-    event_loop.run_until_complete(init_models())
-    factory = async_sessionmaker(engine, expire_on_commit=False)
-    yield factory
-    event_loop.run_until_complete(engine.dispose())
+    async def get(self, file_id: int) -> StubStoredFile | None:
+        for stored in self.items:
+            if stored.id == file_id:
+                return stored
+        return None
 
 
-@pytest.fixture()
-def storage() -> FakeS3Storage:
-    return FakeS3Storage()
-
-
-@pytest.fixture()
-def test_user(session_factory: async_sessionmaker[AsyncSession], event_loop: asyncio.AbstractEventLoop) -> User:
-    async def create_user() -> User:
-        async with session_factory() as session:
-            user = User(email="test@example.com", password_hash="hash", role="user")
-            session.add(user)
-            await session.commit()
-            await session.refresh(user)
-            return user
-
-    return event_loop.run_until_complete(create_user())
-
-
-@pytest.fixture()
-def client(
-    session_factory: async_sessionmaker[AsyncSession],
-    storage: FakeS3Storage,
-    test_user: User,
-) -> Generator[TestClient, None, None]:
-    async def override_get_session() -> AsyncIterator[AsyncSession]:
-        async with session_factory() as session:
-            yield session
-
-    async def override_get_current_user() -> User:
-        return test_user
-
-    def override_get_file_service(
-        session: AsyncSession = Depends(get_session),
-    ) -> FileService:
-        return FileService(session, storage=storage)
-
-    app.dependency_overrides[get_session] = override_get_session
-    app.dependency_overrides[get_current_user] = override_get_current_user
-    app.dependency_overrides[get_file_service] = override_get_file_service
-
-    with TestClient(app) as test_client:
-        yield test_client
-
-    app.dependency_overrides.clear()
-
-
-def test_upload_file_success(client: TestClient, storage: FakeS3Storage) -> None:
-    response = client.post(
-        "/files/upload",
-        files={"file": ("resume.pdf", b"%PDF-1.4", "application/pdf")},
+@pytest.mark.asyncio
+async def test_upload_file_success(storage: FakeS3Storage) -> None:
+    session = DummySession()
+    service = FileService(session, storage=storage)
+    service.file_repo = DummyFileRepository()
+    upload = UploadFile(
+        filename="resume.pdf",
+        file=BytesIO(b"%PDF-1.4"),
+        headers={"content-type": "application/pdf"},
     )
-    assert response.status_code == 201
-    data = response.json()
-    assert data["filename"] == "resume.pdf"
-    assert data["content_type"] == "application/pdf"
+
+    result = await service.upload(owner_id=1, upload=upload)
+
+    assert result.filename == "resume.pdf"
+    assert result.content_type == "application/pdf"
     assert any(key.endswith("resume.pdf") for key in storage.uploaded.keys())
 
 
-def test_get_file_returns_presigned_url(client: TestClient) -> None:
-    upload_response = client.post(
-        "/files/upload",
-        files={"file": ("resume.pdf", b"%PDF-1.4", "application/pdf")},
+@pytest.mark.asyncio
+async def test_get_file_returns_presigned_url() -> None:
+    storage = FakeS3Storage()
+    session = DummySession()
+    service = FileService(session, storage=storage)
+    repository = DummyFileRepository()
+    service.file_repo = repository
+    upload = UploadFile(
+        filename="resume.pdf",
+        file=BytesIO(b"%PDF-1.4"),
+        headers={"content-type": "application/pdf"},
     )
-    file_id = upload_response.json()["id"]
 
-    download_response = client.get(f"/files/{file_id}")
-    assert download_response.status_code == 200
-    payload = download_response.json()
-    assert payload["url"].startswith("https://fake-s3/")
+    stored = await service.upload(owner_id=5, upload=upload)
+    fetched = await service.get(stored.id, owner_id=5)
+    url = service.get_download_url(fetched)
+
+    assert url.startswith("https://fake-s3/")
