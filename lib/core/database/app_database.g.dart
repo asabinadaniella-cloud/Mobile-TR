@@ -314,7 +314,7 @@ class UsersTable extends Users with TableInfo<UsersTable, User> {
   UsersTable createAlias(String alias) => UsersTable(attachedDatabase, alias);
 }
 
-mixin _UsersDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$UsersDaoMixin on DatabaseAccessor<AppDatabase> {
   UsersTable get users => attachedDatabase.users;
 }
 
@@ -697,7 +697,7 @@ class ProfilesTable extends Profiles with TableInfo<ProfilesTable, Profile> {
   ProfilesTable createAlias(String alias) => ProfilesTable(attachedDatabase, alias);
 }
 
-mixin _ProfilesDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$ProfilesDaoMixin on DatabaseAccessor<AppDatabase> {
   ProfilesTable get profiles => attachedDatabase.profiles;
 }
 
@@ -978,7 +978,7 @@ class SurveyVersionsTable extends SurveyVersions with TableInfo<SurveyVersionsTa
   SurveyVersionsTable createAlias(String alias) => SurveyVersionsTable(attachedDatabase, alias);
 }
 
-mixin _SurveyVersionsDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$SurveyVersionsDaoMixin on DatabaseAccessor<AppDatabase> {
   SurveyVersionsTable get surveyVersions => attachedDatabase.surveyVersions;
 }
 
@@ -1233,7 +1233,7 @@ class SurveySectionsTable extends SurveySections with TableInfo<SurveySectionsTa
   SurveySectionsTable createAlias(String alias) => SurveySectionsTable(attachedDatabase, alias);
 }
 
-mixin _SurveySectionsDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$SurveySectionsDaoMixin on DatabaseAccessor<AppDatabase> {
   SurveySectionsTable get surveySections => attachedDatabase.surveySections;
 }
 
@@ -1563,7 +1563,7 @@ class QuestionsTable extends Questions with TableInfo<QuestionsTable, Question> 
   QuestionsTable createAlias(String alias) => QuestionsTable(attachedDatabase, alias);
 }
 
-mixin _QuestionsDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$QuestionsDaoMixin on DatabaseAccessor<AppDatabase> {
   QuestionsTable get questions => attachedDatabase.questions;
 }
 
@@ -1816,7 +1816,7 @@ class QuestionOptionsTable extends QuestionOptions with TableInfo<QuestionOption
   QuestionOptionsTable createAlias(String alias) => QuestionOptionsTable(attachedDatabase, alias);
 }
 
-mixin _QuestionOptionsDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$QuestionOptionsDaoMixin on DatabaseAccessor<AppDatabase> {
   QuestionOptionsTable get questionOptions => attachedDatabase.questionOptions;
 }
 
@@ -2122,7 +2122,7 @@ class ResponsesTable extends Responses with TableInfo<ResponsesTable, Response> 
   ResponsesTable createAlias(String alias) => ResponsesTable(attachedDatabase, alias);
 }
 
-mixin _ResponsesDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$ResponsesDaoMixin on DatabaseAccessor<AppDatabase> {
   ResponsesTable get responses => attachedDatabase.responses;
 }
 
@@ -2402,7 +2402,7 @@ class ReportsTable extends Reports with TableInfo<ReportsTable, Report> {
   ReportsTable createAlias(String alias) => ReportsTable(attachedDatabase, alias);
 }
 
-mixin _ReportsDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$ReportsDaoMixin on DatabaseAccessor<AppDatabase> {
   ReportsTable get reports => attachedDatabase.reports;
 }
 
@@ -2657,7 +2657,7 @@ class ChatsTable extends Chats with TableInfo<ChatsTable, Chat> {
   ChatsTable createAlias(String alias) => ChatsTable(attachedDatabase, alias);
 }
 
-mixin _ChatsDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$ChatsDaoMixin on DatabaseAccessor<AppDatabase> {
   ChatsTable get chats => attachedDatabase.chats;
 }
 
@@ -2981,7 +2981,7 @@ class MessagesTable extends Messages with TableInfo<MessagesTable, Message> {
   MessagesTable createAlias(String alias) => MessagesTable(attachedDatabase, alias);
 }
 
-mixin _MessagesDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$MessagesDaoMixin on DatabaseAccessor<AppDatabase> {
   MessagesTable get messages => attachedDatabase.messages;
 }
 
@@ -3261,7 +3261,7 @@ class FilesTable extends Files with TableInfo<FilesTable, FileEntity> {
   FilesTable createAlias(String alias) => FilesTable(attachedDatabase, alias);
 }
 
-mixin _FilesDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$FilesDaoMixin on DatabaseAccessor<AppDatabase> {
   FilesTable get files => attachedDatabase.files;
 }
 
@@ -3516,7 +3516,7 @@ class PushTokensTable extends PushTokens with TableInfo<PushTokensTable, PushTok
   PushTokensTable createAlias(String alias) => PushTokensTable(attachedDatabase, alias);
 }
 
-mixin _PushTokensDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$PushTokensDaoMixin on DatabaseAccessor<AppDatabase> {
   PushTokensTable get pushTokens => attachedDatabase.pushTokens;
 }
 
@@ -3796,6 +3796,6 @@ class AuditLogTable extends AuditLog with TableInfo<AuditLogTable, AuditLogData>
   AuditLogTable createAlias(String alias) => AuditLogTable(attachedDatabase, alias);
 }
 
-mixin _AuditLogDaoMixin on DatabaseAccessor<AppDatabase> {
+mixin _$AuditLogDaoMixin on DatabaseAccessor<AppDatabase> {
   AuditLogTable get auditLog => attachedDatabase.auditLog;
 }
