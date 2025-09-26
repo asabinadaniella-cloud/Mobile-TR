@@ -1,8 +1,11 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ..repositories.report import ReportRepository
 from ..schemas.report import ReportRead, ReportUpdate
+from ..models.report import Report
+from ..models.response import ResponseAnswer
+from ..models.user import User
 
 
 class ReportService:
@@ -31,3 +34,23 @@ class ReportService:
         await self.session.commit()
         await self.session.refresh(report)
         return ReportRead.model_validate(report)
+
+    async def get_for_export(self, report_id: int, current_user: User) -> Report:
+        report = await self.report_repo.get_with_details(report_id)
+        if not report:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Report not found")
+        if current_user.role != "moderator" and report.user_id != current_user.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+        if report.response is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Report has no response")
+        return report
+
+    @staticmethod
+    def sort_answers(report: Report) -> list[ResponseAnswer]:
+        answers = list(report.response.answers)
+        answers.sort(
+            key=lambda ans: (
+                ans.question.order if ans.question and ans.question.order is not None else ans.question_id
+            )
+        )
+        return answers
