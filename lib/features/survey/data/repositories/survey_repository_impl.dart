@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import '../../domain/survey_repository.dart';
 import '../datasources/survey_local_data_source.dart';

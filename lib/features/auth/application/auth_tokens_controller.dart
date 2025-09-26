@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import '../../../core/storage/secure_token_storage.dart';
 import '../domain/auth_tokens.dart';

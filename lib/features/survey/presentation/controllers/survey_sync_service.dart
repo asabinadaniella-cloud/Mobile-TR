@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 
 import '../../data/datasources/survey_remote_data_source.dart';
 import '../../data/models/survey_models.dart';

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 
 import '../../../../core/providers/app_providers.dart';

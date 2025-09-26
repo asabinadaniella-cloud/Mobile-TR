@@ -2265,6 +2265,8 @@ class ResponsesTable extends Responses with TableInfo<ResponsesTable, Response> 
 
 mixin _$ResponsesDaoMixin on DatabaseAccessor<AppDatabase> {
   ResponsesTable get responses => attachedDatabase.responses;
+  QuestionsTable get questions => attachedDatabase.questions;
+  SurveySectionsTable get surveySections => attachedDatabase.surveySections;
 }
 
 class Report extends DataClass implements Insertable<Report> {
