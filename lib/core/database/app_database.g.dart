@@ -55,18 +55,18 @@ class User extends DataClass implements Insertable<User> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     if (!nullToAbsent || email != null) {
-      map['email'] = Variable<String>(email);
+      map['email'] = Variable<String?>(email);
     }
     if (!nullToAbsent || phoneNumber != null) {
-      map['phone_number'] = Variable<String>(phoneNumber);
+      map['phone_number'] = Variable<String?>(phoneNumber);
     }
     if (!nullToAbsent || role != null) {
-      map['role'] = Variable<String>(role);
+      map['role'] = Variable<String?>(role);
     }
     map['status'] = Variable<String>(status);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
-      map['updated_at'] = Variable<DateTime>(updatedAt);
+      map['updated_at'] = Variable<DateTime?>(updatedAt);
     }
     return map;
   }
@@ -149,21 +149,19 @@ class UsersCompanion extends UpdateCompanion<User> {
 
   UsersCompanion.insert({
     required String id,
-    this.email = const Value.absent(),
-    this.phoneNumber = const Value.absent(),
-    this.role = const Value.absent(),
-    this.status = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  }) :
-        id = Value(id),
-        email = this.email,
-        phoneNumber = this.phoneNumber,
-        role = this.role,
-        status = this.status,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt,
-        ;
+    Value<String?> email = const Value.absent(),
+    Value<String?> phoneNumber = const Value.absent(),
+    Value<String?> role = const Value.absent(),
+    Value<String> status = const Value.absent(),
+    Value<DateTime> createdAt = const Value.absent(),
+    Value<DateTime?> updatedAt = const Value.absent(),
+  })  : id = Value(id),
+        email = email,
+        phoneNumber = phoneNumber,
+        role = role,
+        status = status,
+        createdAt = createdAt,
+        updatedAt = updatedAt;
 
   static Insertable<User> custom({
     Expression<String>? id,
@@ -212,13 +210,13 @@ class UsersCompanion extends UpdateCompanion<User> {
       map['id'] = Variable<String>(id.value);
     }
     if (email.present) {
-      map['email'] = Variable<String>(email.value);
+      map['email'] = Variable<String?>(email.value);
     }
     if (phoneNumber.present) {
-      map['phone_number'] = Variable<String>(phoneNumber.value);
+      map['phone_number'] = Variable<String?>(phoneNumber.value);
     }
     if (role.present) {
-      map['role'] = Variable<String>(role.value);
+      map['role'] = Variable<String?>(role.value);
     }
     if (status.present) {
       map['status'] = Variable<String>(status.value);
@@ -227,7 +225,7 @@ class UsersCompanion extends UpdateCompanion<User> {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<DateTime?>(updatedAt.value);
     }
     return map;
   }
@@ -240,13 +238,31 @@ class UsersTable extends Users with TableInfo<UsersTable, User> {
   final String? _alias;
   UsersTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> email = GeneratedColumn<String>('email', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<String> phoneNumber = GeneratedColumn<String>('phone_number', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<String> role = GeneratedColumn<String>('role', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<String> status = GeneratedColumn<String>('status', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: false, defaultValue: const Constant('active'));
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>('created_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>('updated_at', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> email = GeneratedColumn<String>(
+      'email', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> phoneNumber = GeneratedColumn<String>(
+      'phone_number', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+      'role', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('active'));
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -338,29 +354,29 @@ class Profile extends DataClass implements Insertable<Profile> {
     map['id'] = Variable<String>(id);
     map['user_id'] = Variable<String>(userId);
     if (!nullToAbsent || firstName != null) {
-      map['first_name'] = Variable<String>(firstName);
+      map['first_name'] = Variable<String?>(firstName);
     }
     if (!nullToAbsent || lastName != null) {
-      map['last_name'] = Variable<String>(lastName);
+      map['last_name'] = Variable<String?>(lastName);
     }
     if (!nullToAbsent || middleName != null) {
-      map['middle_name'] = Variable<String>(middleName);
+      map['middle_name'] = Variable<String?>(middleName);
     }
     if (!nullToAbsent || birthDate != null) {
-      map['birth_date'] = Variable<DateTime>(birthDate);
+      map['birth_date'] = Variable<DateTime?>(birthDate);
     }
     if (!nullToAbsent || gender != null) {
-      map['gender'] = Variable<String>(gender);
+      map['gender'] = Variable<String?>(gender);
     }
     if (!nullToAbsent || avatarUrl != null) {
-      map['avatar_url'] = Variable<String>(avatarUrl);
+      map['avatar_url'] = Variable<String?>(avatarUrl);
     }
     if (!nullToAbsent || city != null) {
-      map['city'] = Variable<String>(city);
+      map['city'] = Variable<String?>(city);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
-      map['updated_at'] = Variable<DateTime>(updatedAt);
+      map['updated_at'] = Variable<DateTime?>(updatedAt);
     }
     return map;
   }
@@ -468,28 +484,26 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
   ProfilesCompanion.insert({
     required String id,
     required String userId,
-    this.firstName = const Value.absent(),
-    this.lastName = const Value.absent(),
-    this.middleName = const Value.absent(),
-    this.birthDate = const Value.absent(),
-    this.gender = const Value.absent(),
-    this.avatarUrl = const Value.absent(),
-    this.city = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<String?> firstName = const Value.absent(),
+    Value<String?> lastName = const Value.absent(),
+    Value<String?> middleName = const Value.absent(),
+    Value<DateTime?> birthDate = const Value.absent(),
+    Value<String?> gender = const Value.absent(),
+    Value<String?> avatarUrl = const Value.absent(),
+    Value<String?> city = const Value.absent(),
+    Value<DateTime> createdAt = const Value.absent(),
+    Value<DateTime?> updatedAt = const Value.absent(),
+  })  : id = Value(id),
         userId = Value(userId),
-        firstName = this.firstName,
-        lastName = this.lastName,
-        middleName = this.middleName,
-        birthDate = this.birthDate,
-        gender = this.gender,
-        avatarUrl = this.avatarUrl,
-        city = this.city,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt,
-        ;
+        firstName = firstName,
+        lastName = lastName,
+        middleName = middleName,
+        birthDate = birthDate,
+        gender = gender,
+        avatarUrl = avatarUrl,
+        city = city,
+        createdAt = createdAt,
+        updatedAt = updatedAt;
 
   static Insertable<Profile> custom({
     Expression<String>? id,
@@ -557,31 +571,31 @@ class ProfilesCompanion extends UpdateCompanion<Profile> {
       map['user_id'] = Variable<String>(userId.value);
     }
     if (firstName.present) {
-      map['first_name'] = Variable<String>(firstName.value);
+      map['first_name'] = Variable<String?>(firstName.value);
     }
     if (lastName.present) {
-      map['last_name'] = Variable<String>(lastName.value);
+      map['last_name'] = Variable<String?>(lastName.value);
     }
     if (middleName.present) {
-      map['middle_name'] = Variable<String>(middleName.value);
+      map['middle_name'] = Variable<String?>(middleName.value);
     }
     if (birthDate.present) {
-      map['birth_date'] = Variable<DateTime>(birthDate.value);
+      map['birth_date'] = Variable<DateTime?>(birthDate.value);
     }
     if (gender.present) {
-      map['gender'] = Variable<String>(gender.value);
+      map['gender'] = Variable<String?>(gender.value);
     }
     if (avatarUrl.present) {
-      map['avatar_url'] = Variable<String>(avatarUrl.value);
+      map['avatar_url'] = Variable<String?>(avatarUrl.value);
     }
     if (city.present) {
-      map['city'] = Variable<String>(city.value);
+      map['city'] = Variable<String?>(city.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<DateTime?>(updatedAt.value);
     }
     return map;
   }
@@ -594,17 +608,44 @@ class ProfilesTable extends Profiles with TableInfo<ProfilesTable, Profile> {
   final String? _alias;
   ProfilesTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> userId = GeneratedColumn<String>('user_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
-  late final GeneratedColumn<String> firstName = GeneratedColumn<String>('first_name', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<String> lastName = GeneratedColumn<String>('last_name', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<String> middleName = GeneratedColumn<String>('middle_name', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<DateTime> birthDate = GeneratedColumn<DateTime>('birth_date', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
-  late final GeneratedColumn<String> gender = GeneratedColumn<String>('gender', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<String> avatarUrl = GeneratedColumn<String>('avatar_url', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<String> city = GeneratedColumn<String>('city', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>('created_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>('updated_at', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
+  late final GeneratedColumn<String> firstName = GeneratedColumn<String>(
+      'first_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> lastName = GeneratedColumn<String>(
+      'last_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> middleName = GeneratedColumn<String>(
+      'middle_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> birthDate =
+      GeneratedColumn<DateTime>('birth_date', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  late final GeneratedColumn<String> gender = GeneratedColumn<String>(
+      'gender', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> avatarUrl = GeneratedColumn<String>(
+      'avatar_url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> city = GeneratedColumn<String>(
+      'city', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -718,12 +759,12 @@ class SurveyVersion extends DataClass implements Insertable<SurveyVersion> {
     map['version_number'] = Variable<int>(versionNumber);
     map['title'] = Variable<String>(title);
     if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
+      map['description'] = Variable<String?>(description);
     }
     map['is_active'] = Variable<bool>(isActive);
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || publishedAt != null) {
-      map['published_at'] = Variable<DateTime>(publishedAt);
+      map['published_at'] = Variable<DateTime?>(publishedAt);
     }
     return map;
   }
@@ -808,19 +849,17 @@ class SurveyVersionsCompanion extends UpdateCompanion<SurveyVersion> {
     required String id,
     required int versionNumber,
     required String title,
-    this.description = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.publishedAt = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<String?> description = const Value.absent(),
+    Value<bool> isActive = const Value.absent(),
+    Value<DateTime> createdAt = const Value.absent(),
+    Value<DateTime?> publishedAt = const Value.absent(),
+  })  : id = Value(id),
         versionNumber = Value(versionNumber),
         title = Value(title),
-        description = this.description,
-        isActive = this.isActive,
-        createdAt = this.createdAt,
-        publishedAt = this.publishedAt,
-        ;
+        description = description,
+        isActive = isActive,
+        createdAt = createdAt,
+        publishedAt = publishedAt;
 
   static Insertable<SurveyVersion> custom({
     Expression<String>? id,
@@ -875,7 +914,7 @@ class SurveyVersionsCompanion extends UpdateCompanion<SurveyVersion> {
       map['title'] = Variable<String>(title.value);
     }
     if (description.present) {
-      map['description'] = Variable<String>(description.value);
+      map['description'] = Variable<String?>(description.value);
     }
     if (isActive.present) {
       map['is_active'] = Variable<bool>(isActive.value);
@@ -884,7 +923,7 @@ class SurveyVersionsCompanion extends UpdateCompanion<SurveyVersion> {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (publishedAt.present) {
-      map['published_at'] = Variable<DateTime>(publishedAt.value);
+      map['published_at'] = Variable<DateTime?>(publishedAt.value);
     }
     return map;
   }
@@ -897,13 +936,31 @@ class SurveyVersionsTable extends SurveyVersions with TableInfo<SurveyVersionsTa
   final String? _alias;
   SurveyVersionsTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<int> versionNumber = GeneratedColumn<int>('version_number', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: true);
-  late final GeneratedColumn<String> title = GeneratedColumn<String>('title', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> description = GeneratedColumn<String>('description', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>('is_active', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: const Constant(false));
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>('created_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
-  late final GeneratedColumn<DateTime> publishedAt = GeneratedColumn<DateTime>('published_at', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> versionNumber = GeneratedColumn<int>(
+      'version_number', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<bool> isActive = GeneratedColumn<bool>(
+      'is_active', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(false));
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> publishedAt =
+      GeneratedColumn<DateTime>('published_at', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -998,7 +1055,7 @@ class SurveySection extends DataClass implements Insertable<SurveySection> {
     map['survey_version_id'] = Variable<String>(surveyVersionId);
     map['title'] = Variable<String>(title);
     if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
+      map['description'] = Variable<String?>(description);
     }
     map['position'] = Variable<int>(position);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -1079,17 +1136,15 @@ class SurveySectionsCompanion extends UpdateCompanion<SurveySection> {
     required String id,
     required String surveyVersionId,
     required String title,
-    this.description = const Value.absent(),
+    Value<String?> description = const Value.absent(),
     required int position,
-    this.createdAt = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<DateTime> createdAt = const Value.absent(),
+  })  : id = Value(id),
         surveyVersionId = Value(surveyVersionId),
         title = Value(title),
-        description = this.description,
+        description = description,
         position = Value(position),
-        createdAt = this.createdAt,
-        ;
+        createdAt = createdAt;
 
   static Insertable<SurveySection> custom({
     Expression<String>? id,
@@ -1140,7 +1195,7 @@ class SurveySectionsCompanion extends UpdateCompanion<SurveySection> {
       map['title'] = Variable<String>(title.value);
     }
     if (description.present) {
-      map['description'] = Variable<String>(description.value);
+      map['description'] = Variable<String?>(description.value);
     }
     if (position.present) {
       map['position'] = Variable<int>(position.value);
@@ -1159,12 +1214,29 @@ class SurveySectionsTable extends SurveySections with TableInfo<SurveySectionsTa
   final String? _alias;
   SurveySectionsTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> surveyVersionId = GeneratedColumn<String>('survey_version_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES survey_versions(id)'));
-  late final GeneratedColumn<String> title = GeneratedColumn<String>('title', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> description = GeneratedColumn<String>('description', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<int> position = GeneratedColumn<int>('position', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>('created_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> surveyVersionId = GeneratedColumn<String>(
+      'survey_version_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES survey_versions(id)'));
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+      'position', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1258,12 +1330,12 @@ class Question extends DataClass implements Insertable<Question> {
     map['question_type'] = Variable<String>(questionType);
     map['text'] = Variable<String>(text);
     if (!nullToAbsent || helpText != null) {
-      map['help_text'] = Variable<String>(helpText);
+      map['help_text'] = Variable<String?>(helpText);
     }
     map['is_required'] = Variable<bool>(isRequired);
     map['position'] = Variable<int>(position);
     if (!nullToAbsent || validationRules != null) {
-      map['validation_rules'] = Variable<String>(validationRules);
+      map['validation_rules'] = Variable<String?>(validationRules);
     }
     return map;
   }
@@ -1362,21 +1434,19 @@ class QuestionsCompanion extends UpdateCompanion<Question> {
     required String surveyVersionId,
     required String questionType,
     required String text,
-    this.helpText = const Value.absent(),
-    this.isRequired = const Value.absent(),
+    Value<String?> helpText = const Value.absent(),
+    Value<bool> isRequired = const Value.absent(),
     required int position,
-    this.validationRules = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<String?> validationRules = const Value.absent(),
+  })  : id = Value(id),
         surveySectionId = Value(surveySectionId),
         surveyVersionId = Value(surveyVersionId),
         questionType = Value(questionType),
         text = Value(text),
-        helpText = this.helpText,
-        isRequired = this.isRequired,
+        helpText = helpText,
+        isRequired = isRequired,
         position = Value(position),
-        validationRules = this.validationRules,
-        ;
+        validationRules = validationRules;
 
   static Insertable<Question> custom({
     Expression<String>? id,
@@ -1445,7 +1515,7 @@ class QuestionsCompanion extends UpdateCompanion<Question> {
       map['text'] = Variable<String>(text.value);
     }
     if (helpText.present) {
-      map['help_text'] = Variable<String>(helpText.value);
+      map['help_text'] = Variable<String?>(helpText.value);
     }
     if (isRequired.present) {
       map['is_required'] = Variable<bool>(isRequired.value);
@@ -1454,7 +1524,7 @@ class QuestionsCompanion extends UpdateCompanion<Question> {
       map['position'] = Variable<int>(position.value);
     }
     if (validationRules.present) {
-      map['validation_rules'] = Variable<String>(validationRules.value);
+      map['validation_rules'] = Variable<String?>(validationRules.value);
     }
     return map;
   }
@@ -1467,15 +1537,41 @@ class QuestionsTable extends Questions with TableInfo<QuestionsTable, Question> 
   final String? _alias;
   QuestionsTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> surveySectionId = GeneratedColumn<String>('survey_section_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES survey_sections(id)'));
-  late final GeneratedColumn<String> surveyVersionId = GeneratedColumn<String>('survey_version_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES survey_versions(id)'));
-  late final GeneratedColumn<String> questionType = GeneratedColumn<String>('question_type', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> text = GeneratedColumn<String>('text', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> helpText = GeneratedColumn<String>('help_text', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<bool> isRequired = GeneratedColumn<bool>('is_required', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: const Constant(false));
-  late final GeneratedColumn<int> position = GeneratedColumn<int>('position', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: true);
-  late final GeneratedColumn<String> validationRules = GeneratedColumn<String>('validation_rules', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> surveySectionId = GeneratedColumn<String>(
+      'survey_section_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES survey_sections(id)'));
+  late final GeneratedColumn<String> surveyVersionId = GeneratedColumn<String>(
+      'survey_version_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES survey_versions(id)'));
+  late final GeneratedColumn<String> questionType = GeneratedColumn<String>(
+      'question_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> text = GeneratedColumn<String>(
+      'text', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> helpText = GeneratedColumn<String>(
+      'help_text', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<bool> isRequired = GeneratedColumn<bool>(
+      'is_required', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(false));
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+      'position', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  late final GeneratedColumn<String> validationRules =
+      GeneratedColumn<String>('validation_rules', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1663,16 +1759,14 @@ class QuestionOptionsCompanion extends UpdateCompanion<QuestionOption> {
     required String questionId,
     required String value,
     required String label,
-    this.position = const Value.absent(),
-    this.isDefault = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<int> position = const Value.absent(),
+    Value<bool> isDefault = const Value.absent(),
+  })  : id = Value(id),
         questionId = Value(questionId),
         value = Value(value),
         label = Value(label),
-        position = this.position,
-        isDefault = this.isDefault,
-        ;
+        position = position,
+        isDefault = isDefault;
 
   static Insertable<QuestionOption> custom({
     Expression<String>? id,
@@ -1742,12 +1836,31 @@ class QuestionOptionsTable extends QuestionOptions with TableInfo<QuestionOption
   final String? _alias;
   QuestionOptionsTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> questionId = GeneratedColumn<String>('question_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES questions(id)'));
-  late final GeneratedColumn<String> value = GeneratedColumn<String>('value', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> label = GeneratedColumn<String>('label', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<int> position = GeneratedColumn<int>('position', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: const Constant(0));
-  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>('is_default', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: const Constant(false));
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> questionId = GeneratedColumn<String>(
+      'question_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES questions(id)'));
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+      'value', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+      'label', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+      'position', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  late final GeneratedColumn<bool> isDefault = GeneratedColumn<bool>(
+      'is_default', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1842,7 +1955,7 @@ class Response extends DataClass implements Insertable<Response> {
     map['answered_at'] = Variable<DateTime>(answeredAt);
     map['is_synced'] = Variable<bool>(isSynced);
     if (!nullToAbsent || updatedAt != null) {
-      map['updated_at'] = Variable<DateTime>(updatedAt);
+      map['updated_at'] = Variable<DateTime?>(updatedAt);
     }
     return map;
   }
@@ -1935,19 +2048,17 @@ class ResponsesCompanion extends UpdateCompanion<Response> {
     required String userId,
     required String surveyVersionId,
     required String answer,
-    this.answeredAt = const Value.absent(),
-    this.isSynced = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<DateTime> answeredAt = const Value.absent(),
+    Value<bool> isSynced = const Value.absent(),
+    Value<DateTime?> updatedAt = const Value.absent(),
+  })  : id = Value(id),
         questionId = Value(questionId),
         userId = Value(userId),
         surveyVersionId = Value(surveyVersionId),
         answer = Value(answer),
-        answeredAt = this.answeredAt,
-        isSynced = this.isSynced,
-        updatedAt = this.updatedAt,
-        ;
+        answeredAt = answeredAt,
+        isSynced = isSynced,
+        updatedAt = updatedAt;
 
   static Insertable<Response> custom({
     Expression<String>? id,
@@ -2018,7 +2129,7 @@ class ResponsesCompanion extends UpdateCompanion<Response> {
       map['is_synced'] = Variable<bool>(isSynced.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<DateTime?>(updatedAt.value);
     }
     return map;
   }
@@ -2031,14 +2142,43 @@ class ResponsesTable extends Responses with TableInfo<ResponsesTable, Response> 
   final String? _alias;
   ResponsesTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> questionId = GeneratedColumn<String>('question_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES questions(id)'));
-  late final GeneratedColumn<String> userId = GeneratedColumn<String>('user_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
-  late final GeneratedColumn<String> surveyVersionId = GeneratedColumn<String>('survey_version_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES survey_versions(id)'));
-  late final GeneratedColumn<String> answer = GeneratedColumn<String>('answer', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<DateTime> answeredAt = GeneratedColumn<DateTime>('answered_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
-  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>('is_synced', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: const Constant(false));
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>('updated_at', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> questionId = GeneratedColumn<String>(
+      'question_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES questions(id)'));
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
+  late final GeneratedColumn<String> surveyVersionId = GeneratedColumn<String>(
+      'survey_version_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES survey_versions(id)'));
+  late final GeneratedColumn<String> answer = GeneratedColumn<String>(
+      'answer', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<DateTime> answeredAt =
+      GeneratedColumn<DateTime>('answered_at', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: false,
+          defaultValue: currentDateAndTime);
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(false));
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -2144,11 +2284,11 @@ class Report extends DataClass implements Insertable<Report> {
     map['survey_version_id'] = Variable<String>(surveyVersionId);
     map['status'] = Variable<String>(status);
     if (!nullToAbsent || url != null) {
-      map['url'] = Variable<String>(url);
+      map['url'] = Variable<String?>(url);
     }
     map['generated_at'] = Variable<DateTime>(generatedAt);
     if (!nullToAbsent || updatedAt != null) {
-      map['updated_at'] = Variable<DateTime>(updatedAt);
+      map['updated_at'] = Variable<DateTime?>(updatedAt);
     }
     return map;
   }
@@ -2234,18 +2374,16 @@ class ReportsCompanion extends UpdateCompanion<Report> {
     required String userId,
     required String surveyVersionId,
     required String status,
-    this.url = const Value.absent(),
-    this.generatedAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<String?> url = const Value.absent(),
+    Value<DateTime> generatedAt = const Value.absent(),
+    Value<DateTime?> updatedAt = const Value.absent(),
+  })  : id = Value(id),
         userId = Value(userId),
         surveyVersionId = Value(surveyVersionId),
         status = Value(status),
-        url = this.url,
-        generatedAt = this.generatedAt,
-        updatedAt = this.updatedAt,
-        ;
+        url = url,
+        generatedAt = generatedAt,
+        updatedAt = updatedAt;
 
   static Insertable<Report> custom({
     Expression<String>? id,
@@ -2303,13 +2441,13 @@ class ReportsCompanion extends UpdateCompanion<Report> {
       map['status'] = Variable<String>(status.value);
     }
     if (url.present) {
-      map['url'] = Variable<String>(url.value);
+      map['url'] = Variable<String?>(url.value);
     }
     if (generatedAt.present) {
       map['generated_at'] = Variable<DateTime>(generatedAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<DateTime?>(updatedAt.value);
     }
     return map;
   }
@@ -2322,13 +2460,35 @@ class ReportsTable extends Reports with TableInfo<ReportsTable, Report> {
   final String? _alias;
   ReportsTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> userId = GeneratedColumn<String>('user_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
-  late final GeneratedColumn<String> surveyVersionId = GeneratedColumn<String>('survey_version_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES survey_versions(id)'));
-  late final GeneratedColumn<String> status = GeneratedColumn<String>('status', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> url = GeneratedColumn<String>('url', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<DateTime> generatedAt = GeneratedColumn<DateTime>('generated_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>('updated_at', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
+  late final GeneratedColumn<String> surveyVersionId = GeneratedColumn<String>(
+      'survey_version_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'REFERENCES survey_versions(id)'));
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+      'url', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> generatedAt = GeneratedColumn<DateTime>(
+      'generated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -2421,14 +2581,14 @@ class Chat extends DataClass implements Insertable<Chat> {
     map['id'] = Variable<String>(id);
     map['user_id'] = Variable<String>(userId);
     if (!nullToAbsent || title != null) {
-      map['title'] = Variable<String>(title);
+      map['title'] = Variable<String?>(title);
     }
     if (!nullToAbsent || status != null) {
-      map['status'] = Variable<String>(status);
+      map['status'] = Variable<String?>(status);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
-      map['updated_at'] = Variable<DateTime>(updatedAt);
+      map['updated_at'] = Variable<DateTime?>(updatedAt);
     }
     return map;
   }
@@ -2506,18 +2666,16 @@ class ChatsCompanion extends UpdateCompanion<Chat> {
   ChatsCompanion.insert({
     required String id,
     required String userId,
-    this.title = const Value.absent(),
-    this.status = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<String?> title = const Value.absent(),
+    Value<String?> status = const Value.absent(),
+    Value<DateTime> createdAt = const Value.absent(),
+    Value<DateTime?> updatedAt = const Value.absent(),
+  })  : id = Value(id),
         userId = Value(userId),
-        title = this.title,
-        status = this.status,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt,
-        ;
+        title = title,
+        status = status,
+        createdAt = createdAt,
+        updatedAt = updatedAt;
 
   static Insertable<Chat> custom({
     Expression<String>? id,
@@ -2565,16 +2723,16 @@ class ChatsCompanion extends UpdateCompanion<Chat> {
       map['user_id'] = Variable<String>(userId.value);
     }
     if (title.present) {
-      map['title'] = Variable<String>(title.value);
+      map['title'] = Variable<String?>(title.value);
     }
     if (status.present) {
-      map['status'] = Variable<String>(status.value);
+      map['status'] = Variable<String?>(status.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<DateTime?>(updatedAt.value);
     }
     return map;
   }
@@ -2587,12 +2745,29 @@ class ChatsTable extends Chats with TableInfo<ChatsTable, Chat> {
   final String? _alias;
   ChatsTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> userId = GeneratedColumn<String>('user_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
-  late final GeneratedColumn<String> title = GeneratedColumn<String>('title', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<String> status = GeneratedColumn<String>('status', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>('created_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>('updated_at', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+      'title', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+      'status', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -2685,7 +2860,7 @@ class Message extends DataClass implements Insertable<Message> {
     map['is_synced'] = Variable<bool>(isSynced);
     map['sent_at'] = Variable<DateTime>(sentAt);
     if (!nullToAbsent || updatedAt != null) {
-      map['updated_at'] = Variable<DateTime>(updatedAt);
+      map['updated_at'] = Variable<DateTime?>(updatedAt);
     }
     return map;
   }
@@ -2783,22 +2958,20 @@ class MessagesCompanion extends UpdateCompanion<Message> {
     required String chatId,
     required String senderId,
     required String body,
-    this.messageType = const Value.absent(),
-    this.isRead = const Value.absent(),
-    this.isSynced = const Value.absent(),
-    this.sentAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<String> messageType = const Value.absent(),
+    Value<bool> isRead = const Value.absent(),
+    Value<bool> isSynced = const Value.absent(),
+    Value<DateTime> sentAt = const Value.absent(),
+    Value<DateTime?> updatedAt = const Value.absent(),
+  })  : id = Value(id),
         chatId = Value(chatId),
         senderId = Value(senderId),
         body = Value(body),
-        messageType = this.messageType,
-        isRead = this.isRead,
-        isSynced = this.isSynced,
-        sentAt = this.sentAt,
-        updatedAt = this.updatedAt,
-        ;
+        messageType = messageType,
+        isRead = isRead,
+        isSynced = isSynced,
+        sentAt = sentAt,
+        updatedAt = updatedAt;
 
   static Insertable<Message> custom({
     Expression<String>? id,
@@ -2876,7 +3049,7 @@ class MessagesCompanion extends UpdateCompanion<Message> {
       map['sent_at'] = Variable<DateTime>(sentAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<DateTime?>(updatedAt.value);
     }
     return map;
   }
@@ -2889,15 +3062,47 @@ class MessagesTable extends Messages with TableInfo<MessagesTable, Message> {
   final String? _alias;
   MessagesTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> chatId = GeneratedColumn<String>('chat_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES chats(id)'));
-  late final GeneratedColumn<String> senderId = GeneratedColumn<String>('sender_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
-  late final GeneratedColumn<String> body = GeneratedColumn<String>('body', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> messageType = GeneratedColumn<String>('message_type', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: false, defaultValue: const Constant('text'));
-  late final GeneratedColumn<bool> isRead = GeneratedColumn<bool>('is_read', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: const Constant(false));
-  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>('is_synced', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: const Constant(false));
-  late final GeneratedColumn<DateTime> sentAt = GeneratedColumn<DateTime>('sent_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>('updated_at', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> chatId = GeneratedColumn<String>(
+      'chat_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES chats(id)'));
+  late final GeneratedColumn<String> senderId = GeneratedColumn<String>(
+      'sender_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
+      'body', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> messageType = GeneratedColumn<String>(
+      'message_type', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('text'));
+  late final GeneratedColumn<bool> isRead = GeneratedColumn<bool>(
+      'is_read', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(false));
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+      'is_synced', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(false));
+  late final GeneratedColumn<DateTime> sentAt = GeneratedColumn<DateTime>(
+      'sent_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -3000,17 +3205,17 @@ class FileEntity extends DataClass implements Insertable<FileEntity> {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     if (!nullToAbsent || messageId != null) {
-      map['message_id'] = Variable<String>(messageId);
+      map['message_id'] = Variable<String?>(messageId);
     }
     if (!nullToAbsent || ownerId != null) {
-      map['owner_id'] = Variable<String>(ownerId);
+      map['owner_id'] = Variable<String?>(ownerId);
     }
     map['url'] = Variable<String>(url);
     if (!nullToAbsent || mimeType != null) {
-      map['mime_type'] = Variable<String>(mimeType);
+      map['mime_type'] = Variable<String?>(mimeType);
     }
     if (!nullToAbsent || size != null) {
-      map['size'] = Variable<int>(size);
+      map['size'] = Variable<int?>(size);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -3094,21 +3299,19 @@ class FilesCompanion extends UpdateCompanion<FileEntity> {
 
   FilesCompanion.insert({
     required String id,
-    this.messageId = const Value.absent(),
-    this.ownerId = const Value.absent(),
+    Value<String?> messageId = const Value.absent(),
+    Value<String?> ownerId = const Value.absent(),
     required String url,
-    this.mimeType = const Value.absent(),
-    this.size = const Value.absent(),
-    this.createdAt = const Value.absent(),
-  }) :
-        id = Value(id),
-        messageId = this.messageId,
-        ownerId = this.ownerId,
+    Value<String?> mimeType = const Value.absent(),
+    Value<int?> size = const Value.absent(),
+    Value<DateTime> createdAt = const Value.absent(),
+  })  : id = Value(id),
+        messageId = messageId,
+        ownerId = ownerId,
         url = Value(url),
-        mimeType = this.mimeType,
-        size = this.size,
-        createdAt = this.createdAt,
-        ;
+        mimeType = mimeType,
+        size = size,
+        createdAt = createdAt;
 
   static Insertable<FileEntity> custom({
     Expression<String>? id,
@@ -3157,19 +3360,19 @@ class FilesCompanion extends UpdateCompanion<FileEntity> {
       map['id'] = Variable<String>(id.value);
     }
     if (messageId.present) {
-      map['message_id'] = Variable<String>(messageId.value);
+      map['message_id'] = Variable<String?>(messageId.value);
     }
     if (ownerId.present) {
-      map['owner_id'] = Variable<String>(ownerId.value);
+      map['owner_id'] = Variable<String?>(ownerId.value);
     }
     if (url.present) {
       map['url'] = Variable<String>(url.value);
     }
     if (mimeType.present) {
-      map['mime_type'] = Variable<String>(mimeType.value);
+      map['mime_type'] = Variable<String?>(mimeType.value);
     }
     if (size.present) {
-      map['size'] = Variable<int>(size.value);
+      map['size'] = Variable<int?>(size.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -3185,13 +3388,35 @@ class FilesTable extends Files with TableInfo<FilesTable, FileEntity> {
   final String? _alias;
   FilesTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> messageId = GeneratedColumn<String>('message_id', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES messages(id)'));
-  late final GeneratedColumn<String> ownerId = GeneratedColumn<String>('owner_id', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
-  late final GeneratedColumn<String> url = GeneratedColumn<String>('url', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> mimeType = GeneratedColumn<String>('mime_type', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<int> size = GeneratedColumn<int>('size', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>('created_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> messageId = GeneratedColumn<String>(
+      'message_id', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES messages(id)'));
+  late final GeneratedColumn<String> ownerId = GeneratedColumn<String>(
+      'owner_id', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
+  late final GeneratedColumn<String> url = GeneratedColumn<String>(
+      'url', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> mimeType = GeneratedColumn<String>(
+      'mime_type', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<int> size = GeneratedColumn<int>(
+      'size', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -3281,11 +3506,11 @@ class PushToken extends DataClass implements Insertable<PushToken> {
     map['user_id'] = Variable<String>(userId);
     map['token'] = Variable<String>(token);
     if (!nullToAbsent || deviceType != null) {
-      map['device_type'] = Variable<String>(deviceType);
+      map['device_type'] = Variable<String?>(deviceType);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     if (!nullToAbsent || updatedAt != null) {
-      map['updated_at'] = Variable<DateTime>(updatedAt);
+      map['updated_at'] = Variable<DateTime?>(updatedAt);
     }
     return map;
   }
@@ -3364,17 +3589,15 @@ class PushTokensCompanion extends UpdateCompanion<PushToken> {
     required String id,
     required String userId,
     required String token,
-    this.deviceType = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<String?> deviceType = const Value.absent(),
+    Value<DateTime> createdAt = const Value.absent(),
+    Value<DateTime?> updatedAt = const Value.absent(),
+  })  : id = Value(id),
         userId = Value(userId),
         token = Value(token),
-        deviceType = this.deviceType,
-        createdAt = this.createdAt,
-        updatedAt = this.updatedAt,
-        ;
+        deviceType = deviceType,
+        createdAt = createdAt,
+        updatedAt = updatedAt;
 
   static Insertable<PushToken> custom({
     Expression<String>? id,
@@ -3425,13 +3648,13 @@ class PushTokensCompanion extends UpdateCompanion<PushToken> {
       map['token'] = Variable<String>(token.value);
     }
     if (deviceType.present) {
-      map['device_type'] = Variable<String>(deviceType.value);
+      map['device_type'] = Variable<String?>(deviceType.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updated_at'] = Variable<DateTime?>(updatedAt.value);
     }
     return map;
   }
@@ -3444,12 +3667,29 @@ class PushTokensTable extends PushTokens with TableInfo<PushTokensTable, PushTok
   final String? _alias;
   PushTokensTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> userId = GeneratedColumn<String>('user_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
-  late final GeneratedColumn<String> token = GeneratedColumn<String>('token', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> deviceType = GeneratedColumn<String>('device_type', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>('created_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>('updated_at', aliasedName, false, typeName: 'INTEGER', requiredDuringInsert: false);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+      'user_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
+  late final GeneratedColumn<String> token = GeneratedColumn<String>(
+      'token', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> deviceType = GeneratedColumn<String>(
+      'device_type', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -3538,10 +3778,10 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
     map['entity_id'] = Variable<String>(entityId);
     map['action'] = Variable<String>(action);
     if (!nullToAbsent || actorId != null) {
-      map['actor_id'] = Variable<String>(actorId);
+      map['actor_id'] = Variable<String?>(actorId);
     }
     if (!nullToAbsent || payload != null) {
-      map['payload'] = Variable<String>(payload);
+      map['payload'] = Variable<String?>(payload);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
@@ -3628,18 +3868,16 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
     required String entityType,
     required String entityId,
     required String action,
-    this.actorId = const Value.absent(),
-    this.payload = const Value.absent(),
-    this.createdAt = const Value.absent(),
-  }) :
-        id = Value(id),
+    Value<String?> actorId = const Value.absent(),
+    Value<String?> payload = const Value.absent(),
+    Value<DateTime> createdAt = const Value.absent(),
+  })  : id = Value(id),
         entityType = Value(entityType),
         entityId = Value(entityId),
         action = Value(action),
-        actorId = this.actorId,
-        payload = this.payload,
-        createdAt = this.createdAt,
-        ;
+        actorId = actorId,
+        payload = payload,
+        createdAt = createdAt;
 
   static Insertable<AuditLogData> custom({
     Expression<String>? id,
@@ -3697,10 +3935,10 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
       map['action'] = Variable<String>(action.value);
     }
     if (actorId.present) {
-      map['actor_id'] = Variable<String>(actorId.value);
+      map['actor_id'] = Variable<String?>(actorId.value);
     }
     if (payload.present) {
-      map['payload'] = Variable<String>(payload.value);
+      map['payload'] = Variable<String?>(payload.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -3716,13 +3954,32 @@ class AuditLogTable extends AuditLog with TableInfo<AuditLogTable, AuditLogData>
   final String? _alias;
   AuditLogTable(this.attachedDatabase, [this._alias]);
 
-  late final GeneratedColumn<String> id = GeneratedColumn<String>('id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> entityType = GeneratedColumn<String>('entity_type', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> entityId = GeneratedColumn<String>('entity_id', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> action = GeneratedColumn<String>('action', aliasedName, true, typeName: 'TEXT', requiredDuringInsert: true);
-  late final GeneratedColumn<String> actorId = GeneratedColumn<String>('actor_id', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false, defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
-  late final GeneratedColumn<String> payload = GeneratedColumn<String>('payload', aliasedName, false, typeName: 'TEXT', requiredDuringInsert: false);
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>('created_at', aliasedName, true, typeName: 'INTEGER', requiredDuringInsert: false, defaultValue: currentDateAndTime);
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+      'entity_type', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+      'entity_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> action = GeneratedColumn<String>(
+      'action', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  late final GeneratedColumn<String> actorId = GeneratedColumn<String>(
+      'actor_id', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES users(id)'));
+  late final GeneratedColumn<String> payload = GeneratedColumn<String>(
+      'payload', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns => [
         id,
