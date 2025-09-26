@@ -52,7 +52,7 @@ jobs:
         run: flutter create . --platforms web
 
       - name: Build Flutter web app
-        run: flutter build web --release --base-href "/${REPO_NAME}/" --web-renderer html
+        run: flutter build web --release --base-href "/${REPO_NAME}/"
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
