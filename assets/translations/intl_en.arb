@@ -8,5 +8,19 @@
   "resultsTitle": "Results",
   "chatTitle": "Chat",
   "profileTitle": "Profile",
-  "settingsTitle": "Settings"
+  "settingsTitle": "Settings",
+  "chatModeUser": "Participant",
+  "chatModeModerator": "Moderator",
+  "chatModeratorChatPickerLabel": "Select chat",
+  "chatMarkInWork": "In progress",
+  "chatModeratorTyping": "Moderator is typing…",
+  "chatEmptyUser": "Start the conversation with your mentor.",
+  "chatEmptyModerator": "Pick a participant chat to start messaging.",
+  "chatHistoryEnd": "Beginning of conversation",
+  "chatAttachTooltip": "Attach file",
+  "chatInputHint": "Type a message",
+  "chatSend": "Send",
+  "chatAuthorModerator": "Moderator",
+  "chatAuthorUser": "Participant",
+  "chatMessagePending": "sending"
 }

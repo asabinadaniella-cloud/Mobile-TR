@@ -70,6 +70,20 @@ class AppLocalizations {
   String get chatTitle => _get('chatTitle');
   String get profileTitle => _get('profileTitle');
   String get settingsTitle => _get('settingsTitle');
+  String get chatModeUser => _get('chatModeUser');
+  String get chatModeModerator => _get('chatModeModerator');
+  String get chatModeratorChatPickerLabel => _get('chatModeratorChatPickerLabel');
+  String get chatMarkInWork => _get('chatMarkInWork');
+  String get chatModeratorTyping => _get('chatModeratorTyping');
+  String get chatEmptyUser => _get('chatEmptyUser');
+  String get chatEmptyModerator => _get('chatEmptyModerator');
+  String get chatHistoryEnd => _get('chatHistoryEnd');
+  String get chatAttachTooltip => _get('chatAttachTooltip');
+  String get chatInputHint => _get('chatInputHint');
+  String get chatSend => _get('chatSend');
+  String get chatAuthorModerator => _get('chatAuthorModerator');
+  String get chatAuthorUser => _get('chatAuthorUser');
+  String get chatMessagePending => _get('chatMessagePending');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

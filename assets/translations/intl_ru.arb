@@ -8,5 +8,19 @@
   "resultsTitle": "Результаты",
   "chatTitle": "Чат",
   "profileTitle": "Профиль",
-  "settingsTitle": "Настройки"
+  "settingsTitle": "Настройки",
+  "chatModeUser": "Участник",
+  "chatModeModerator": "Модератор",
+  "chatModeratorChatPickerLabel": "Выберите чат",
+  "chatMarkInWork": "В работе",
+  "chatModeratorTyping": "Модератор печатает…",
+  "chatEmptyUser": "Напишите наставнику, чтобы начать диалог.",
+  "chatEmptyModerator": "Выберите чат участника, чтобы начать общение.",
+  "chatHistoryEnd": "Это начало истории переписки",
+  "chatAttachTooltip": "Прикрепить файл",
+  "chatInputHint": "Введите сообщение",
+  "chatSend": "Отправить",
+  "chatAuthorModerator": "Модератор",
+  "chatAuthorUser": "Участник",
+  "chatMessagePending": "отправляется"
 }
