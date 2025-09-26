@@ -1,9 +1,6 @@
-import 'dart:io';
-
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
+
+import 'connection/connection.dart';
 
 part 'app_database.g.dart';
 
@@ -281,7 +278,7 @@ class AuditLog extends Table {
     AuditLogDao,
   ],
 )
-static const List<String> _createIndexStatements = [
+const List<String> _createIndexStatements = [
   'CREATE INDEX IF NOT EXISTS idx_survey_sections_version_position ON survey_sections(survey_version_id, position)',
   'CREATE INDEX IF NOT EXISTS idx_questions_section_position ON questions(survey_section_id, position)',
   'CREATE INDEX IF NOT EXISTS idx_questions_version ON questions(survey_version_id)',
@@ -329,13 +326,7 @@ class AppDatabase extends _$AppDatabase {
   }
 }
 
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'tochka_rosta.db'));
-    return NativeDatabase.createInBackground(file);
-  });
-}
+QueryExecutor _openConnection() => openConnection();
 
 @DriftAccessor(tables: [Users])
 class UsersDao extends DatabaseAccessor<AppDatabase> with _$UsersDaoMixin {
