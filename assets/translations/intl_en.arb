@@ -22,5 +22,22 @@
   "chatSend": "Send",
   "chatAuthorModerator": "Moderator",
   "chatAuthorUser": "Participant",
-  "chatMessagePending": "sending"
+  "chatMessagePending": "sending",
+  "resultsEmptyState": "No reports available yet.",
+  "resultsStatusInReview": "In review",
+  "resultsStatusReady": "Ready",
+  "resultsCreatedAt": "Created:",
+  "resultsUpdatedAt": "Updated:",
+  "resultsSummaryTitle": "Summary",
+  "resultsRecommendationsTitle": "Recommendations",
+  "resultsRecommendationsEmpty": "No recommendations yet.",
+  "resultsExportCsv": "Export CSV",
+  "resultsDownloadPdf": "Download PDF",
+  "resultsModeratorSectionTitle": "Moderator tools",
+  "resultsSummaryEditorHint": "Adjust the key metrics before publishing. Changes are kept locally until you publish.",
+  "resultsSummaryDraftNotice": "Changes are not published yet.",
+  "resultsPublishAction": "Publish",
+  "resultsPublishSuccessMessage": "Summary saved and ready for publication.",
+  "resultsExportPreparing": "Preparing export",
+  "resultsNotFoundMessage": "Report not found."
 }

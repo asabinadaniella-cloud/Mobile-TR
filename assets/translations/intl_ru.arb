@@ -22,5 +22,22 @@
   "chatSend": "Отправить",
   "chatAuthorModerator": "Модератор",
   "chatAuthorUser": "Участник",
-  "chatMessagePending": "отправляется"
+  "chatMessagePending": "отправляется",
+  "resultsEmptyState": "Пока нет доступных отчетов.",
+  "resultsStatusInReview": "На проверке",
+  "resultsStatusReady": "Готов",
+  "resultsCreatedAt": "Создан:",
+  "resultsUpdatedAt": "Обновлен:",
+  "resultsSummaryTitle": "Сводка",
+  "resultsRecommendationsTitle": "Рекомендации",
+  "resultsRecommendationsEmpty": "Рекомендаций пока нет.",
+  "resultsExportCsv": "Экспорт CSV",
+  "resultsDownloadPdf": "Скачать PDF",
+  "resultsModeratorSectionTitle": "Модерация summary",
+  "resultsSummaryEditorHint": "Отредактируйте ключевые показатели перед публикацией. Значения сохраняются локально до публикации.",
+  "resultsSummaryDraftNotice": "Изменения еще не опубликованы.",
+  "resultsPublishAction": "Опубликовать",
+  "resultsPublishSuccessMessage": "Summary сохранено и готово к публикации.",
+  "resultsExportPreparing": "Подготовка выгрузки",
+  "resultsNotFoundMessage": "Отчет не найден."
 }

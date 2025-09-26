@@ -84,6 +84,23 @@ class AppLocalizations {
   String get chatAuthorModerator => _get('chatAuthorModerator');
   String get chatAuthorUser => _get('chatAuthorUser');
   String get chatMessagePending => _get('chatMessagePending');
+  String get resultsEmptyState => _get('resultsEmptyState');
+  String get resultsStatusInReview => _get('resultsStatusInReview');
+  String get resultsStatusReady => _get('resultsStatusReady');
+  String get resultsCreatedAt => _get('resultsCreatedAt');
+  String get resultsUpdatedAt => _get('resultsUpdatedAt');
+  String get resultsSummaryTitle => _get('resultsSummaryTitle');
+  String get resultsRecommendationsTitle => _get('resultsRecommendationsTitle');
+  String get resultsRecommendationsEmpty => _get('resultsRecommendationsEmpty');
+  String get resultsExportCsv => _get('resultsExportCsv');
+  String get resultsDownloadPdf => _get('resultsDownloadPdf');
+  String get resultsModeratorSectionTitle => _get('resultsModeratorSectionTitle');
+  String get resultsSummaryEditorHint => _get('resultsSummaryEditorHint');
+  String get resultsSummaryDraftNotice => _get('resultsSummaryDraftNotice');
+  String get resultsPublishAction => _get('resultsPublishAction');
+  String get resultsPublishSuccessMessage => _get('resultsPublishSuccessMessage');
+  String get resultsExportPreparing => _get('resultsExportPreparing');
+  String get resultsNotFoundMessage => _get('resultsNotFoundMessage');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
