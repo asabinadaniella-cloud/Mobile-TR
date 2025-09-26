@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/app_providers.dart';
+import '../router/app_router.dart';
 import '../../features/chat/application/chat_controller.dart';
 import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/results/presentation/pages/results_page.dart';

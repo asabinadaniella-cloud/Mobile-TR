@@ -40,6 +40,10 @@ dev_dependencies:
   json_serializable: ^6.7.1
   drift_dev: 2.14.1
 
+dependency_overrides:
+  drift: 2.14.1
+  drift_dev: 2.14.1
+
 flutter:
   uses-material-design: true
   generate: true

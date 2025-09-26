@@ -68,10 +68,7 @@ class SurveySections extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('survey_sections_version_position_idx', [surveyVersionId, position]),
-      ];
+  // Index created via custom migration in [AppDatabase]._createIndexes.
 }
 
 class Questions extends Table {
@@ -88,11 +85,7 @@ class Questions extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('questions_section_position_idx', [surveySectionId, position]),
-        Index('questions_version_idx', [surveyVersionId]),
-      ];
+  // Indexes created via custom migration in [AppDatabase]._createIndexes.
 }
 
 class QuestionOptions extends Table {
@@ -106,10 +99,7 @@ class QuestionOptions extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('question_options_question_idx', [questionId, position]),
-      ];
+  // Index created via custom migration in [AppDatabase]._createIndexes.
 }
 
 class Responses extends Table {
@@ -125,12 +115,7 @@ class Responses extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('responses_question_user_idx', [questionId, userId], unique: true),
-        Index('responses_survey_user_idx', [surveyVersionId, userId]),
-        Index('responses_answered_at_idx', [answeredAt]),
-      ];
+  // Indexes created via custom migration in [AppDatabase]._createIndexes.
 }
 
 class Reports extends Table {
@@ -145,11 +130,7 @@ class Reports extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('reports_user_idx', [userId]),
-        Index('reports_survey_idx', [surveyVersionId]),
-      ];
+  // Indexes created via custom migration in [AppDatabase]._createIndexes.
 }
 
 class Chats extends Table {
@@ -163,10 +144,7 @@ class Chats extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('chats_user_idx', [userId]),
-      ];
+  // Index created via custom migration in [AppDatabase]._createIndexes.
 }
 
 class Messages extends Table {
@@ -183,10 +161,7 @@ class Messages extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('messages_chat_sent_idx', [chatId, sentAt]),
-      ];
+  // Index created via custom migration in [AppDatabase]._createIndexes.
 }
 
 @DataClassName('FileEntity')
@@ -202,11 +177,7 @@ class Files extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('files_message_idx', [messageId]),
-        Index('files_owner_idx', [ownerId]),
-      ];
+  // Indexes created via custom migration in [AppDatabase]._createIndexes.
 }
 
 class PushTokens extends Table {
@@ -220,11 +191,7 @@ class PushTokens extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('push_tokens_token_idx', [token], unique: true),
-        Index('push_tokens_user_idx', [userId]),
-      ];
+  // Indexes created via custom migration in [AppDatabase]._createIndexes.
 }
 
 class AuditLog extends Table {
@@ -239,11 +206,7 @@ class AuditLog extends Table {
   @override
   Set<Column> get primaryKey => {id};
 
-  @override
-  List<Index> get indexes => [
-        Index('audit_log_entity_idx', [entityType, entityId]),
-        Index('audit_log_actor_idx', [actorId]),
-      ];
+  // Indexes created via custom migration in [AppDatabase]._createIndexes.
 }
 
 @DriftDatabase(

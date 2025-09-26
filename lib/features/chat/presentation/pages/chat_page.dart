@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/localization/l10n.dart';
 import '../../application/chat_controller.dart';
+import '../../domain/chat_models.dart';
 
 class ChatPage extends ConsumerStatefulWidget {
   const ChatPage({super.key});
