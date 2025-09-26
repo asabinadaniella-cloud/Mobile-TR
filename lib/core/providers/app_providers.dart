@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -49,4 +50,8 @@ final authTokensProvider = StateNotifierProvider<AuthTokensNotifier, AuthTokens>
 
 final firebaseAnalyticsProvider = Provider<FirebaseAnalytics?>((ref) {
   return FirebaseAnalytics.instance;
+});
+
+final firebaseMessagingProvider = Provider<FirebaseMessaging>((ref) {
+  return FirebaseMessaging.instance;
 });
