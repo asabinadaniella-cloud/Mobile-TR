@@ -1,0 +1,56 @@
+name: Flutter Web CI
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ensure firebase_messaging is not used
+        run: |
+          for file in pubspec.yaml pubspec.lock; do
+            if [ -f "$file" ] && grep -q "firebase_messaging" "$file"; then
+              echo "firebase_messaging is not supported on Flutter Web. Please remove it from dependencies." >&2
+              exit 1
+            fi
+          done
+
+      - name: Cache Flutter pub packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pub-
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Flutter pub upgrade
+        run: flutter pub upgrade --major-versions
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build Flutter web app
+        run: flutter build web --release
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: build/web
+          force_orphan: true
