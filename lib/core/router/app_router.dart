@@ -8,6 +8,8 @@ import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/results/presentation/models/report_models.dart';
+import '../../features/results/presentation/pages/report_view_page.dart';
 import '../../features/results/presentation/pages/results_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/survey/presentation/pages/survey_page.dart';
@@ -53,6 +55,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: ResultsPage.routePath,
                 name: ResultsPage.routeName,
                 builder: (context, state) => const ResultsPage(),
+                routes: [
+                  GoRoute(
+                    path: ReportViewPage.routePath,
+                    name: ReportViewPage.routeName,
+                    builder: (context, state) {
+                      final extra = state.extra;
+                      if (extra is Report) {
+                        return ReportViewPage(report: extra);
+                      }
+                      return const _ReportNotFoundPage();
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -107,6 +122,21 @@ class AppShell extends StatelessWidget {
           NavigationDestination(icon: const Icon(Icons.chat_bubble_outline), label: l10n.chatTitle),
           NavigationDestination(icon: const Icon(Icons.person_outline), label: l10n.profileTitle),
         ],
+      ),
+    );
+  }
+}
+
+class _ReportNotFoundPage extends StatelessWidget {
+  const _ReportNotFoundPage();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.resultsTitle)),
+      body: Center(
+        child: Text(l10n.resultsNotFoundMessage),
       ),
     );
   }
