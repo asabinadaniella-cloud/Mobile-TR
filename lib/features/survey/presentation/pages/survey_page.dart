@@ -35,8 +35,14 @@ class SurveyPage extends ConsumerWidget {
               final section = state.currentSection;
               final question = state.currentQuestion;
               if (survey.sections.isEmpty || section == null || question == null) {
-                return const Center(child: Text('Нет доступных вопросов.'));
+                return Center(child: Text(l10n.surveyNoQuestionsMessage));
               }
+
+              final validationMessage = state.validationError == null
+                  ? null
+                  : state.validationError == SurveyController.missingAnswerErrorKey
+                      ? l10n.surveyValidationRequired
+                      : state.validationError!;
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,7 +60,7 @@ class SurveyPage extends ConsumerWidget {
                   LinearProgressIndicator(value: state.progress),
                   const SizedBox(height: 8),
                   Text(
-                    '${state.answeredQuestions}/${state.totalQuestions} вопросов',
+                    '${state.answeredQuestions}/${state.totalQuestions} ${l10n.surveyQuestionsLabel}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                   const SizedBox(height: 16),
@@ -70,11 +76,11 @@ class SurveyPage extends ConsumerWidget {
                               controller.saveAnswer(value);
                             },
                           ),
-                          if (state.validationError != null)
+                          if (validationMessage != null)
                             Padding(
                               padding: const EdgeInsets.only(top: 8),
                               child: Text(
-                                state.validationError!,
+                                validationMessage,
                                 style: TextStyle(color: Theme.of(context).colorScheme.error),
                               ),
                             ),
@@ -91,14 +97,14 @@ class SurveyPage extends ConsumerWidget {
                             Navigator.of(context).pop();
                           }
                         },
-                        child: const Text('Продолжить позже'),
+                        child: Text(l10n.surveyContinueLater),
                       ),
                       const Spacer(),
                       OutlinedButton(
                         onPressed: state.currentSectionIndex == 0 && state.currentQuestionIndex == 0
                             ? null
                             : controller.previousQuestion,
-                        child: const Text('Назад'),
+                        child: Text(l10n.surveyBackButton),
                       ),
                       const SizedBox(width: 12),
                       ElevatedButton(
@@ -113,7 +119,7 @@ class SurveyPage extends ConsumerWidget {
                                 width: 16,
                                 child: CircularProgressIndicator(strokeWidth: 2),
                               )
-                            : const Text('Далее'),
+                            : Text(l10n.surveyNextButton),
                       ),
                     ],
                   ),
@@ -121,6 +127,7 @@ class SurveyPage extends ConsumerWidget {
               );
             },
             error: (error, _) => _ErrorState(
+              l10n: l10n,
               message: error.toString(),
               onRetry: controller.loadSurvey,
             ),
@@ -133,8 +140,9 @@ class SurveyPage extends ConsumerWidget {
 }
 
 class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message, required this.onRetry});
+  const _ErrorState({required this.l10n, required this.message, required this.onRetry});
 
+  final AppLocalizations l10n;
   final String message;
   final VoidCallback onRetry;
 
@@ -145,7 +153,7 @@ class _ErrorState extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Не удалось загрузить анкету',
+            l10n.surveyLoadErrorTitle,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
@@ -153,7 +161,7 @@ class _ErrorState extends StatelessWidget {
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text('Повторить'),
+            child: Text(l10n.surveyRetryButton),
           ),
         ],
       ),

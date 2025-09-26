@@ -187,6 +187,11 @@ class ChatController extends StateNotifier<ChatState> {
     if (state.mode == mode) {
       return;
     }
+    final analytics = ref.read(firebaseAnalyticsProvider);
+    analytics?.logEvent(
+      name: 'chat_mode_changed',
+      parameters: {'mode': mode.name},
+    );
     final chatId = mode == ChatMode.user
         ? ref.read(chatDefaultChatIdProvider)
         : state.availableChats.firstOrNull?.id ?? state.selectedChatId;
@@ -283,6 +288,12 @@ class ChatController extends StateNotifier<ChatState> {
       }
     } catch (error) {
       state = state.copyWith(errorMessage: error.toString());
+      await _logEvent(
+        'message_send_error',
+        chatId: chatId,
+        mode: state.mode,
+        attachmentCount: payloadAttachments.length,
+      );
     } finally {
       state = state.copyWith(isSending: false);
     }
@@ -314,6 +325,7 @@ class ChatController extends StateNotifier<ChatState> {
           .map((chat) => chat.id == chatId ? chat.copyWith(status: 'in_progress', updatedAt: DateTime.now()) : chat)
           .toList();
       state = state.copyWith(availableChats: updatedChats);
+      await _logEvent('chat_mark_in_work', chatId: chatId, mode: state.mode);
     } finally {
       state = state.copyWith(isMarkingInWork: false);
     }

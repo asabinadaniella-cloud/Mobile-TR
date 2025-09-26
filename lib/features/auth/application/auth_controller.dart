@@ -61,10 +61,13 @@ class AuthController extends StateNotifier<AuthState> {
         lastSentOtp: code,
         lastPhoneNumber: phoneNumber,
       );
+      await _logEvent('auth_otp_sent', 'phone');
     } on AuthException catch (error, stackTrace) {
       state = state.copyWith(status: AsyncError<void>(error.message, stackTrace));
+      await _logEvent('auth_otp_failure', 'phone', error: error.message);
     } catch (error, stackTrace) {
       state = state.copyWith(status: AsyncError<void>(error, stackTrace));
+      await _logEvent('auth_otp_failure', 'phone', error: error.toString());
     }
   }
 
@@ -90,8 +93,10 @@ class AuthController extends StateNotifier<AuthState> {
       state = state.copyWith(status: const AsyncData<void>(null));
     } on AuthException catch (error, stackTrace) {
       state = state.copyWith(status: AsyncError<void>(error.message, stackTrace));
+      await _logEvent('auth_failure', 'token_refresh', error: error.message);
     } catch (error, stackTrace) {
       state = state.copyWith(status: AsyncError<void>(error, stackTrace));
+      await _logEvent('auth_failure', 'token_refresh', error: error.toString());
     }
   }
 
@@ -108,8 +113,10 @@ class AuthController extends StateNotifier<AuthState> {
       await _logEvent('auth_success', method);
     } on AuthException catch (error, stackTrace) {
       state = state.copyWith(status: AsyncError<void>(error.message, stackTrace));
+      await _logEvent('auth_failure', method, error: error.message);
     } catch (error, stackTrace) {
       state = state.copyWith(status: AsyncError<void>(error, stackTrace));
+      await _logEvent('auth_failure', method, error: error.toString());
     }
   }
 
@@ -120,8 +127,12 @@ class AuthController extends StateNotifier<AuthState> {
         );
   }
 
-  Future<void> _logEvent(String name, String method) async {
+  Future<void> _logEvent(String name, String method, {String? error}) async {
     final analytics = ref.read(firebaseAnalyticsProvider);
-    await analytics?.logEvent(name: name, parameters: {'method': method});
+    final parameters = <String, Object?>{
+      'method': method,
+      if (error != null && error.isNotEmpty) 'error': error,
+    };
+    await analytics?.logEvent(name: name, parameters: parameters);
   }
 }
