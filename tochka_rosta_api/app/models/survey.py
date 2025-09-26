@@ -1,4 +1,6 @@
-from sqlalchemy import Boolean, ForeignKey, Integer, String
+from typing import Any
+
+from sqlalchemy import Boolean, ForeignKey, Integer, JSON, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base, TimestampMixin
@@ -20,6 +22,7 @@ class SurveySection(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     version_id: Mapped[int] = mapped_column(ForeignKey("survey_versions.id", ondelete="CASCADE"))
+    code: Mapped[str] = mapped_column(String(100), unique=True)
     title: Mapped[str] = mapped_column(String(255))
     order: Mapped[int] = mapped_column(Integer)
 
@@ -32,9 +35,25 @@ class SurveyQuestion(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     section_id: Mapped[int] = mapped_column(ForeignKey("survey_sections.id", ondelete="CASCADE"))
+    code: Mapped[str] = mapped_column(String(100), unique=True)
     text: Mapped[str] = mapped_column(String)
     question_type: Mapped[str] = mapped_column(String(50))
     order: Mapped[int] = mapped_column(Integer)
+    required: Mapped[bool] = mapped_column(Boolean, default=False)
+    meta: Mapped[dict[str, Any] | None] = mapped_column(JSON, default=None)
 
     section = relationship("SurveySection", back_populates="questions")
     answers = relationship("ResponseAnswer", back_populates="question")
+    options = relationship("SurveyOption", back_populates="question", cascade="all, delete-orphan")
+
+
+class SurveyOption(TimestampMixin, Base):
+    __tablename__ = "survey_options"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    question_id: Mapped[int] = mapped_column(ForeignKey("survey_questions.id", ondelete="CASCADE"))
+    value: Mapped[str] = mapped_column(String(255))
+    label: Mapped[str] = mapped_column(String(255))
+    order: Mapped[int] = mapped_column(Integer)
+
+    question = relationship("SurveyQuestion", back_populates="options")
