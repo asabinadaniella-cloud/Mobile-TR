@@ -28,7 +28,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    _subscription = ref.listen<ChatState>(chatControllerProvider, (previous, next) {
+    _subscription = ref.listenManual<ChatState>(chatControllerProvider, (previous, next) {
       if (!mounted) {
         return;
       }
@@ -334,7 +334,7 @@ class _ChatPageState extends ConsumerState<ChatPage> {
           (file) => PendingAttachment(
             path: file.path!,
             name: file.name,
-            mimeType: file.mimeType,
+            mimeType: null,
             size: file.size,
           ),
         )

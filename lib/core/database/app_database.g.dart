@@ -2,8 +2,8 @@
 // ignore_for_file: type=lint
 part of 'app_database.dart';
 
-abstract class _\$AppDatabase extends GeneratedDatabase {
-  _\$AppDatabase(QueryExecutor e) : super(e);
+abstract class _$AppDatabase extends GeneratedDatabase {
+  _$AppDatabase(QueryExecutor e) : super(e);
 
   late final UsersTable users = UsersTable(this);
   late final ProfilesTable profiles = ProfilesTable(this);
@@ -1555,7 +1555,7 @@ class QuestionsTable extends Questions with TableInfo<QuestionsTable, Question> 
   late final GeneratedColumn<String> questionType = GeneratedColumn<String>(
       'question_type', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
-  late final GeneratedColumn<String> text = GeneratedColumn<String>(
+  late final GeneratedColumn<String> questionText = GeneratedColumn<String>(
       'text', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   late final GeneratedColumn<String> helpText = GeneratedColumn<String>(
@@ -1578,7 +1578,7 @@ class QuestionsTable extends Questions with TableInfo<QuestionsTable, Question> 
         surveySectionId,
         surveyVersionId,
         questionType,
-        text,
+        questionText,
         helpText,
         isRequired,
         position,
@@ -1618,7 +1618,8 @@ class QuestionsTable extends Questions with TableInfo<QuestionsTable, Question> 
       context.missing(const VerificationMeta('questionType'));
     }
     if (data.containsKey('text')) {
-      context.handle(const VerificationMeta('text'), text.isAcceptableOrUnknown(data['text']!, const VerificationMeta('text')));
+      context.handle(const VerificationMeta('text'),
+          questionText.isAcceptableOrUnknown(data['text']!, const VerificationMeta('text')));
     } else if (isInserting) {
       context.missing(const VerificationMeta('text'));
     }
