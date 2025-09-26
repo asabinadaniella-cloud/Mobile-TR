@@ -129,7 +129,7 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<void> _logEvent(String name, String method, {String? error}) async {
     final analytics = ref.read(firebaseAnalyticsProvider);
-    final parameters = <String, Object?>{
+    final parameters = <String, Object>{
       'method': method,
       if (error != null && error.isNotEmpty) 'error': error,
     };

@@ -79,7 +79,7 @@ class Questions extends Table {
   TextColumn get surveySectionId => text().references(SurveySections, #id)();
   TextColumn get surveyVersionId => text().references(SurveyVersions, #id)();
   TextColumn get questionType => text()();
-  TextColumn get text => text()();
+  TextColumn get questionText => text().named('text')();
   TextColumn get helpText => text().nullable()();
   BoolColumn get isRequired => boolean().withDefault(const Constant(false))();
   IntColumn get position => integer()();

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/survey_remote_data_source.dart';
 import '../../data/models/survey_models.dart';
 import '../../domain/survey_repository.dart';
+import '../../data/repositories/survey_repository_impl.dart';
 
 class SurveySyncService {
   SurveySyncService(this._repository, this._remoteDataSource);

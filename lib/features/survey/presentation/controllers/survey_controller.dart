@@ -6,6 +6,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import '../../../../core/providers/app_providers.dart';
 import '../../data/models/survey_models.dart';
 import '../../domain/survey_repository.dart';
+import '../../data/repositories/survey_repository_impl.dart';
 import 'survey_sync_service.dart';
 
 class SurveyState {
