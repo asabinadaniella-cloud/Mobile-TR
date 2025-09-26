@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod/riverpod.dart';
 import 'package:tochka_rosta/core/database/app_database.dart';
 import 'package:tochka_rosta/core/database/repositories/messages_repository.dart';
 
